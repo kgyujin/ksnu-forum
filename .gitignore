@@ -1,0 +1,26 @@
+# Eclipse 관련 파일
+/.settings/
+/.project
+/.classpath
+
+# 빌드 폴더
+/build/
+/target/
+
+# 로그 파일
+*.log
+
+# Tomcat 서버 설정 파일
+/.metadata/
+*.tmp
+
+# Maven 및 Gradle 관련
+/.mvn/
+/.gradle/
+*.iml
+
+# 환경 설정 파일 (보안)
+config.properties
+
+# MySQL Connector JAR
+src/main/webapp/WEB-INF/lib/mysql-connector-*.jar
