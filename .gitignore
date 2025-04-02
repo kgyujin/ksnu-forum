@@ -23,4 +23,4 @@
 config.properties
 
 # MySQL Connector JAR
-src/main/webapp/WEB-INF/lib/mysql-connector-*.jar
+# src/main/webapp/WEB-INF/lib/mysql-connector-*.jar
