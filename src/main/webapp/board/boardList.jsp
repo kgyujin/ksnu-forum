@@ -113,6 +113,8 @@
 %>
 
 <h2 style="text-align:center;"><%= boardName %> 목록</h2>
+<a class="add-button" href="/board/boardAdd.jsp?boardId=<%= boardId %>">글 작성</a>
+
 <table>
     <tr>
         <th>번호</th>
@@ -138,7 +140,7 @@
     <tr>
         <td><%= index++ %></td>
         <td><a href="/board/boardView.jsp?postId=<%= postId %>"><%= title %></a></td>
-        <td><%= userId %></td>
+		<td>익명</td>
         <td><%= createdAt %></td>
     </tr>
 <%
