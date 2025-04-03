@@ -25,9 +25,9 @@
 
         Class.forName("com.mysql.cj.jdbc.Driver");
         conn = DriverManager.getConnection(jdbcUrl, dbId, dbPass);
-        out.println("DB 연결 성공");
+        // out.println("DB 연결 성공");
     } catch (Exception e) {
-        out.println("DB 연결 실패: " + e.getMessage());
+        // out.println("DB 연결 실패: " + e.getMessage());
         e.printStackTrace();
     }
 %>
