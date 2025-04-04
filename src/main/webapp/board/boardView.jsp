@@ -58,6 +58,12 @@
     int postId = 0;
     int boardId = 0;
 
+    // 테스트용 임시 userId 지정
+    // 실제 운영 시에는 주석 처리 또는 제거 필요
+    if (session.getAttribute("userId") == null) {
+        session.setAttribute("userId", "1"); // 임시 userId 설정 (1로 지정)
+    }
+
     try {
         String postIdParam = request.getParameter("postId");
         String boardIdParam = request.getParameter("boardId");
@@ -78,9 +84,7 @@
 
         String userId = (String) session.getAttribute("userId");
         PreparedStatement postStmt = null;
-        PreparedStatement commentStmt = null;
         ResultSet postRs = null;
-        ResultSet commentRs = null;
 
         String postSql = "SELECT p.TITLE, p.CONTENT, u.NAME, p.CREATED_AT, p.RECOMMEND_CNT, p.SCRAP_CNT "
                        + "FROM POSTS p JOIN USERS u ON p.USER_ID = u.USER_ID WHERE POST_ID = ?";
@@ -104,8 +108,13 @@
 <div class="post-content"><%= content %></div>
 
 <div>
-    <span class="reaction" id="recommendBtn">공감 (<span id="recommendCount"><%= recommendCnt %></span>)</span>
-    <span class="reaction" id="scrapBtn">스크랩 (<span id="scrapCount"><%= scrapCnt %></span>)</span>
+    <!-- 추천 기능 -->
+    <form action="/board/boardRecommend.jsp" method="post" id="recommendForm">
+        <input type="hidden" name="POST_ID" value="<%= postId %>">
+        <input type="hidden" name="USER_ID" value="<%= userId %>">
+        <input type="hidden" name="BOARD_ID" value="<%= BoardUtil.getBoardId(request) %>">
+        <button type="submit" class="reaction">공감 (<span id="recommendCount"><%= recommendCnt %></span>)</button>
+    </form>
 </div>
 
 <a href="/board/boardList.jsp?boardId=<%= boardId %>" class="back-button">글 목록</a>
@@ -120,38 +129,6 @@
         if (conn != null) try { conn.close(); } catch (Exception e) { e.printStackTrace(); }
     }
 %>
-
-<script>
-    const postId = <%= postId %>;
-
-    function addComment() {
-        const content = document.getElementById("commentInput").value;
-        if (content.trim()) {
-            // 자바스크립트에서 encodeURIComponent 사용
-            const encodedContent = encodeURIComponent(content);
-            fetch(`/api/addComment?postId=${postId}&content=${encodedContent}`, {
-                method: 'POST'
-            }).then(() => location.reload());
-        } else {
-            alert("댓글 내용을 입력해주세요.");
-        }
-    }
-
-    function toggleReaction(type) {
-        const button = document.getElementById(type + "Btn");
-        const count = document.getElementById(type + "Count");
-        button.classList.toggle("active");
-        const isActive = button.classList.contains("active");
-        count.innerText = parseInt(count.innerText) + (isActive ? 1 : -1);
-
-        fetch(`/api/reaction?postId=${postId}&type=${type}&action=${isActive ? 'add' : 'remove'}`, {
-            method: 'POST'
-        });
-    }
-
-    document.getElementById("recommendBtn").onclick = () => toggleReaction("recommend");
-    document.getElementById("scrapBtn").onclick = () => toggleReaction("scrap");
-</script>
 
 </body>
 </html>
