@@ -42,13 +42,17 @@
         .comment-item {
             margin: 5px 0;
         }
-        .back-button {
+        .back-button, .edit-button {
             margin-top: 20px;
             background-color: red;
             color: white;
             padding: 5px 10px;
             border-radius: 5px;
             text-decoration: none;
+        }
+        .edit-button {
+            margin-left: 10px;
+            background-color: green;
         }
     </style>
 </head>
@@ -57,6 +61,7 @@
 <%
     int postId = 0;
     int boardId = 0;
+    int authorId = 0;
 
     // 테스트용 임시 userId 지정
     // 실제 운영 시에는 주석 처리 또는 제거 필요
@@ -86,7 +91,7 @@
         PreparedStatement postStmt = null;
         ResultSet postRs = null;
 
-        String postSql = "SELECT p.TITLE, p.CONTENT, u.NAME, p.CREATED_AT, p.RECOMMEND_CNT, p.SCRAP_CNT "
+        String postSql = "SELECT p.TITLE, p.CONTENT, u.NAME, p.CREATED_AT, p.RECOMMEND_CNT, p.SCRAP_CNT, p.USER_ID "
                        + "FROM POSTS p JOIN USERS u ON p.USER_ID = u.USER_ID WHERE POST_ID = ?";
         postStmt = conn.prepareStatement(postSql);
         postStmt.setInt(1, postId);
@@ -99,6 +104,7 @@
             String createdAt = postRs.getString("CREATED_AT");
             int recommendCnt = postRs.getInt("RECOMMEND_CNT");
             int scrapCnt = postRs.getInt("SCRAP_CNT");
+            authorId = postRs.getInt("USER_ID");
 %>
 
 <div class="post-title"><%= title %></div>
@@ -112,12 +118,22 @@
     <form action="/board/boardRecommend.jsp" method="post" id="recommendForm">
         <input type="hidden" name="POST_ID" value="<%= postId %>">
         <input type="hidden" name="USER_ID" value="<%= userId %>">
-        <input type="hidden" name="BOARD_ID" value="<%= BoardUtil.getBoardId(request) %>">
+        <input type="hidden" name="BOARD_ID" value="<%= boardId %>">
         <button type="submit" class="reaction">공감 (<span id="recommendCount"><%= recommendCnt %></span>)</button>
     </form>
 </div>
 
-<a href="/board/boardList.jsp?boardId=<%= boardId %>" class="back-button">글 목록</a>
+<div>
+    <a href="/board/boardList.jsp?boardId=<%= boardId %>" class="back-button">글 목록</a>
+<% 
+    // 수정 버튼 조건: 현재 사용자 ID와 작성자 ID가 같을 때만 표시 
+    if (Integer.parseInt(userId) == authorId) { 
+%>
+    <a href="/board/boardUpdate.jsp?boardId=<%= boardId %>&postId=<%= postId %>" class="edit-button">수정</a>
+<% 
+    } 
+%>
+</div>
 
 <%
         }
