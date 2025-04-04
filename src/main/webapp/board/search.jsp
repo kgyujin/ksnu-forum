@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/common/header.jsp" %>
 <%@ include file="/db/dbConnection.jsp" %>
+<%@ page import="com.ksnu.util.PagingUtil" %>
+<%@ page import="com.ksnu.util.BoardUtil" %>
 
 <!DOCTYPE html>
 <html>
@@ -62,21 +64,9 @@
 <%
     String query = request.getParameter("query");
 
-    int pageNum = 1;
     int itemsPerPage = 10;
-    int groupSize = 10;
-    int offset = 0;
-
-    String pageParam = request.getParameter("page");
-    if (pageParam != null) {
-        try {
-            pageNum = Integer.parseInt(pageParam);
-            if (pageNum < 1) pageNum = 1;
-        } catch (NumberFormatException e) {
-            pageNum = 1;
-        }
-    }
-    offset = (pageNum - 1) * itemsPerPage;
+    int pageNum = PagingUtil.getPageNum(request);
+    int offset = PagingUtil.calculateOffset(pageNum, itemsPerPage);
 
     int totalPosts = 0;
     int totalPages = 1;
@@ -88,7 +78,7 @@
         ResultSet searchRs = null;
 
         try {
-            // 게시글 수 조회
+            // 게시글 수 조회 (기존 코드 유지)
             String countSql = "SELECT COUNT(*) AS total FROM POSTS WHERE TITLE LIKE ?";
             countStmt = conn.prepareStatement(countSql);
             countStmt.setString(1, "%" + query + "%");
@@ -96,10 +86,13 @@
 
             if (countRs.next()) {
                 totalPosts = countRs.getInt("total");
-                totalPages = (int) Math.ceil((double) totalPosts / itemsPerPage);
+                totalPages = PagingUtil.calculateTotalPages(totalPosts, itemsPerPage);
             }
 
-            String searchSql = "SELECT b.BOARD_NAME, p.TITLE, p.POST_ID, p.CREATED_AT FROM POSTS p JOIN BOARDS b ON p.BOARD_ID = b.BOARD_ID WHERE p.TITLE LIKE ? ORDER BY p.CREATED_AT DESC LIMIT ? OFFSET ?";
+            // 게시글 검색 쿼리 (기존 코드 유지)
+            String searchSql = "SELECT b.BOARD_NAME, p.TITLE, p.POST_ID, p.CREATED_AT "
+                             + "FROM POSTS p JOIN BOARDS b ON p.BOARD_ID = b.BOARD_ID "
+                             + "WHERE p.TITLE LIKE ? ORDER BY p.CREATED_AT DESC LIMIT ? OFFSET ?";
             searchStmt = conn.prepareStatement(searchSql);
             searchStmt.setString(1, "%" + query + "%");
             searchStmt.setInt(2, itemsPerPage);
@@ -138,6 +131,8 @@
 <!-- 페이지 네비게이션 -->
 <div class="pagination">
 <%
+    // 기존 코드와 동일하게 페이징 처리
+    int groupSize = 10;
     int startPage = ((pageNum - 1) / groupSize) * groupSize + 1;
     int endPage = Math.min(startPage + groupSize - 1, totalPages);
 

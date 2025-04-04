@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/common/header.jsp" %>
 <%@ include file="/db/dbConnection.jsp" %>
+<%@ page import="com.ksnu.util.BoardUtil" %>
 
 <!DOCTYPE html>
 <html>
@@ -102,7 +103,7 @@
                 String createdAt = postRs.getString("CREATED_AT");
 %>
         <li class="post-item">
-            <a href="/board/boardView.jsp?postId=<%= postId %>"><%= title %></a>
+            <a href="/board/boardView.jsp?boardId=<%= boardId %>&postId=<%= postId %>"><%= title %></a>
             <span class="post-date">(<%= createdAt %>)</span>
         </li>
 <%

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/common/header.jsp" %>
 <%@ include file="/db/dbConnection.jsp" %>
+<%@ page import="com.ksnu.util.BoardUtil" %>
 <%@ page import="com.ksnu.service.PostService" %>
 
 <%
