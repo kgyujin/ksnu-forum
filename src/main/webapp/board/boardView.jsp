@@ -49,7 +49,7 @@
             cursor: pointer;
             color: blue;
         }
-        .back-button, .edit-button {
+        .back-button, .edit-button, .delete-button {
             margin-top: 20px;
             background-color: red;
             color: white;
@@ -229,6 +229,7 @@
     <a href="/board/boardList.jsp?boardId=<%= boardId %>" class="back-button">글 목록</a>
     <% if (Integer.parseInt(userId) == authorId) { %>
         <a href="/board/boardUpdate.jsp?boardId=<%= boardId %>&postId=<%= postId %>" class="edit-button">수정</a>
+        <a href="/board/boardDelete.jsp?boardId=<%= boardId %>&postId=<%= postId %>" class="delete-button">삭제</a>
     <% } %>
 </div>
 
