@@ -8,6 +8,7 @@
     String jdbcUrl = null;
     String dbId = null;
     String dbPass = null;
+    String dbDriver = null;
 
     try {
         // config.properties 파일 경로
@@ -22,8 +23,9 @@
         jdbcUrl = props.getProperty("db.url");
         dbId = props.getProperty("db.user");
         dbPass = props.getProperty("db.password");
+        dbDriver = props.getProperty("db.driver");
 
-        Class.forName("com.mysql.cj.jdbc.Driver");
+        Class.forName(dbDriver);
         conn = DriverManager.getConnection(jdbcUrl, dbId, dbPass);
         // out.println("DB 연결 성공");
     } catch (Exception e) {
