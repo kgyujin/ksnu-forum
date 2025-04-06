@@ -19,7 +19,7 @@
             margin: 20px;
         }
 
-        /* Sidebar */
+		/* Sidebar */
         .sidebar {
             width: 200px;
             background-color: #f9f9f9;
@@ -64,6 +64,43 @@
 
         .sidebar li i {
             font-size: 16px;
+            color: #20409a;
+        }
+
+        
+		/* HOT 게시물 */
+        .hot-posts {
+            margin-left: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            width: 300px;
+        }
+
+        .hot-posts h3 {
+            font-size: 18px;
+            font-weight: bold;
+            color: #c94c00;
+            margin-bottom: 10px;
+        }
+
+        .hot-posts ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .hot-posts li {
+            padding: 5px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .hot-posts a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        .hot-posts a:hover {
             color: #20409a;
         }
 
@@ -170,12 +207,14 @@
         </ul>
     </div>
 
-    <!-- Board Sections -->
+    <!-- Board Sections and HOT Posts -->
     <%
         PreparedStatement boardStmt = null;
         PreparedStatement postStmt = null;
+        PreparedStatement hotPostStmt = null;
         ResultSet boardRs = null;
         ResultSet postRs = null;
+        ResultSet hotPostRs = null;
 
         try {
             String boardSql = "SELECT BOARD_ID, BOARD_NAME FROM BOARDS";
@@ -214,12 +253,43 @@
     </div>
     <%
             }
+
+            // HOT 게시물 조회
+            String hotPostSql = "SELECT POST_ID, TITLE, BOARD_ID, CREATED_AT, RECOMMEND_CNT " +
+                                "FROM POSTS WHERE CREATED_AT >= DATE_SUB(NOW(), INTERVAL 7 DAY) " +
+                                "ORDER BY RECOMMEND_CNT DESC LIMIT 4";
+            hotPostStmt = conn.prepareStatement(hotPostSql);
+            hotPostRs = hotPostStmt.executeQuery();
+    %>
+
+    <!-- HOT 게시물 -->
+    <div class="hot-posts">
+        <h3>HOT 게시물</h3>
+        <ul>
+        <%
+            while (hotPostRs.next()) {
+                int postId = hotPostRs.getInt("POST_ID");
+                String title = hotPostRs.getString("TITLE");
+                int boardId = hotPostRs.getInt("BOARD_ID");
+        %>
+            <li>
+                <a href="/board/boardView.jsp?boardId=<%= boardId %>&postId=<%= postId %>"><%= title %></a>
+            </li>
+        <%
+            }
+        %>
+        </ul>
+    </div>
+
+    <%
         } catch (Exception e) {
             out.println("데이터 조회 오류: " + e.getMessage());
         } finally {
             try {
+                if (hotPostRs != null) hotPostRs.close();
                 if (postRs != null) postRs.close();
                 if (boardRs != null) boardRs.close();
+                if (hotPostStmt != null) hotPostStmt.close();
                 if (postStmt != null) postStmt.close();
                 if (boardStmt != null) boardStmt.close();
                 if (conn != null) conn.close();
@@ -229,6 +299,5 @@
         }
     %>
 </div>
-
 </body>
 </html>
