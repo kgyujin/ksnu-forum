@@ -1,4 +1,3 @@
-
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*"%>
 <%@ page import="com.ksnu.util.BoardUtil" %>
@@ -152,8 +151,25 @@
 	    Map<Integer, Integer> anonymousMap = new LinkedHashMap<>();
 	    int anonymousCount = 1;
 	
-	    anonymousMap.put(authorId, 0);
+	    anonymousMap.put(authorId, 0); // 글쓴이는 항상 "익명(글쓴이)"로 표시
+	    
+	    // 첫 번째 쿼리: 모든 댓글을 생성 시간순으로 조회하여 익명 번호 부여
+	    String allCommentsSql = "SELECT USER_ID, CREATED_AT FROM comments WHERE POST_ID = ? ORDER BY CREATED_AT ASC";
+	    PreparedStatement allCommentsStmt = conn.prepareStatement(allCommentsSql);
+	    allCommentsStmt.setInt(1, postId);
+	    ResultSet allCommentsRs = allCommentsStmt.executeQuery();
+	    
+	    // 시간순으로 익명 번호 할당
+	    while (allCommentsRs.next()) {
+	        int commentUserId = allCommentsRs.getInt("USER_ID");
+	        if (commentUserId != authorId && !anonymousMap.containsKey(commentUserId)) {
+	            anonymousMap.put(commentUserId, anonymousCount++);
+	        }
+	    }
+	    allCommentsRs.close();
+	    allCommentsStmt.close();
 	
+	    // 두 번째 쿼리: 부모 댓글만 조회
 	    String parentCommentSql = "SELECT COMMENT_ID, USER_ID, CONTENT, CREATED_AT, PARENT_ID, deleted "
 	                            + "FROM comments WHERE POST_ID = ? AND PARENT_ID = 0 ORDER BY CREATED_AT ASC";
 	    PreparedStatement parentStmt = conn.prepareStatement(parentCommentSql);
@@ -177,9 +193,6 @@
 	            if (parentUserId == authorId) {
 	                parentCommenter = "익명(글쓴이)";
 	            } else {
-	                if (!anonymousMap.containsKey(parentUserId)) {
-	                    anonymousMap.put(parentUserId, anonymousCount++);
-	                }
 	                parentCommenter = "익명" + anonymousMap.get(parentUserId);
 	            }
 	        }
@@ -226,9 +239,6 @@
 	                    if (replyUserId == authorId) {
 	                        replyCommenter = "익명(글쓴이)";
 	                    } else {
-	                        if (!anonymousMap.containsKey(replyUserId)) {
-	                            anonymousMap.put(replyUserId, anonymousCount++);
-	                        }
 	                        replyCommenter = "익명" + anonymousMap.get(replyUserId);
 	                    }
 	                }
