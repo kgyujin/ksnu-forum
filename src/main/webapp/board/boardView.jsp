@@ -1,65 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/common/header.jsp" %>
 <%@ include file="/db/dbConnection.jsp" %>
-<<<<<<< HEAD
-
-<!-- POSTS -->
-<%
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
-    String sql = "SELECT * FROM POSTS";
-%>
-
-<h2>POSTS 목록</h2>
-<table border="1">
-	<!-- (차례로) 게시글 ID, 작성자 ID, 게시판 ID, 제목, 내용, 추천 수, 스크랩 수 -->
-    <tr>
-        <th>POST ID</th>
-        <th>USER ID</th>
-        <th>BOARD ID</th>
-        <th>TITLE</th>
-        <th>CONTENT</th>
-        <th>RECOMMEND_CNT</th>
-        <th>SCRAP_CNT</th>
-    </tr>
-<%
-    try {
-        pstmt = conn.prepareStatement(sql);
-        rs = pstmt.executeQuery();
-
-        while (rs.next()) {
-            String postId = rs.getString("POST_ID");
-            String userId = rs.getString("USER_ID");
-            String postBoardId = rs.getString("BOARD_ID");
-            String title = rs.getString("TITLE");
-            String content = rs.getString("CONTENT");
-            String recommendCnt = rs.getString("RECOMMEND_CNT");
-            String scrapCnt = rs.getString("SCRAP_CNT");
-%>
-    <tr>
-        <td><%= postId %></td>
-        <td><%= userId %></td>
-        <td><%= postBoardId %></td>
-        <td><%= title %></td>
-        <td><%= content %></td>
-        <td><%= recommendCnt %></td>
-        <td><%= scrapCnt %></td>    
-<%
-        }
-    } catch (Exception e) {
-        out.println("데이터 조회 오류: " + e.getMessage());
-    } finally {
-        try {
-            if (rs != null) rs.close();
-            if (pstmt != null) pstmt.close();
-            if (conn != null) conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-%>
-</table>
-=======
 <%@ page import="com.ksnu.util.BoardUtil" %>
 
 <!DOCTYPE html>
@@ -195,7 +136,7 @@
         <button type="submit" class="reaction">공감 (<span id="recommendCount"><%= recommendCnt %></span>)</button>
 	</form>
 	<!-- 스크랩 기능 -->
-	<form action="/board/boardScrap.jsp" method="post" id="scrapForm">
+    <form action="/board/boardScrap.jsp" method="post" id="scrapForm">
         <input type="hidden" name="POST_ID" value="<%= postId %>">
         <input type="hidden" name="USER_ID" value="<%= userId %>">
         <input type="hidden" name="BOARD_ID" value="<%= boardId %>">
@@ -315,4 +256,3 @@ function showReplyForm(commentId) {
 
 </body>
 </html>
->>>>>>> branch 'master' of https://github.com/kgyujin/ksnu-forum
