@@ -149,14 +149,11 @@
     </form>
 	<div class="comment-section">
 	<%
-	    // 익명 번호를 사용자 ID에 따라 고정
-	    Map<Integer, Integer> anonymousMap = new LinkedHashMap<>(); // 순서 보장을 위해 LinkedHashMap 사용
+	    Map<Integer, Integer> anonymousMap = new LinkedHashMap<>();
 	    int anonymousCount = 1;
 	
-	    // 글쓴이의 익명 번호를 미리 설정하여 중복 방지
-	    anonymousMap.put(authorId, 0); // 글쓴이는 익명(글쓴이)로 고정
+	    anonymousMap.put(authorId, 0);
 	
-	    // 부모 댓글 먼저 조회
 	    String parentCommentSql = "SELECT COMMENT_ID, USER_ID, CONTENT, CREATED_AT, PARENT_ID, deleted "
 	                            + "FROM comments WHERE POST_ID = ? AND PARENT_ID = 0 ORDER BY CREATED_AT ASC";
 	    PreparedStatement parentStmt = conn.prepareStatement(parentCommentSql);
@@ -172,17 +169,14 @@
 	        String parentCommenter = "";
 	        String commenterStyle = "";
 	
-	        // 삭제된 댓글 처리
 	        if ("Y".equals(parentDeleted)) {
 	            parentContent = "삭제된 댓글입니다.";
 	            parentCommenter = "(삭제)";
 	            commenterStyle = "style='color:gray;'";
 	        } else {
-	            // 익명 번호 고정 (글쓴이는 무조건 "익명(글쓴이)")
 	            if (parentUserId == authorId) {
 	                parentCommenter = "익명(글쓴이)";
 	            } else {
-	                // 동일 사용자 ID에 대해 동일 익명 번호 할당
 	                if (!anonymousMap.containsKey(parentUserId)) {
 	                    anonymousMap.put(parentUserId, anonymousCount++);
 	                }
@@ -193,7 +187,7 @@
 	    <div class="comment-item">
 	        <strong <%= commenterStyle %>><%= parentCommenter %></strong>: <%= parentContent %> <span>(<%= parentDate %>)</span>
 	        <% if (parentUserId == userId && !"Y".equals(parentDeleted)) { %>
-	            <a href="/board/editComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= parentCommentId %>&content=<%= java.net.URLEncoder.encode(parentContent, "UTF-8") %>">수정</a>
+	            <a href="/board/editComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= parentCommentId %>">수정</a>
 	            <a href="/board/deleteComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= parentCommentId %>" onclick="return confirm('댓글을 삭제하시겠습니까?')">삭제</a>
 	        <% } %>
 	        <button class="reply-button" onclick="showReplyForm(<%= parentCommentId %>)">대댓글</button>
@@ -206,51 +200,56 @@
 	                <button type="submit">작성</button>
 	            </form>
 	        </div>
+	
+	        <%
+	            // 대댓글 조회
+	            String replySql = "SELECT COMMENT_ID, USER_ID, CONTENT, CREATED_AT, deleted "
+	                            + "FROM comments WHERE PARENT_ID = ? ORDER BY CREATED_AT ASC";
+	            PreparedStatement replyStmt = conn.prepareStatement(replySql);
+	            replyStmt.setInt(1, parentCommentId);
+	            ResultSet replyRs = replyStmt.executeQuery();
+	
+	            while (replyRs.next()) {
+	                int replyCommentId = replyRs.getInt("COMMENT_ID");
+	                int replyUserId = replyRs.getInt("USER_ID");
+	                String replyContent = replyRs.getString("CONTENT");
+	                String replyDate = replyRs.getString("CREATED_AT");
+	                String replyDeleted = replyRs.getString("deleted");
+	                String replyCommenter = "";
+	                commenterStyle = "";
+	
+	                if ("Y".equals(replyDeleted)) {
+	                    replyContent = "삭제된 댓글입니다.";
+	                    replyCommenter = "(삭제)";
+	                    commenterStyle = "style='color:gray;'";
+	                } else {
+	                    if (replyUserId == authorId) {
+	                        replyCommenter = "익명(글쓴이)";
+	                    } else {
+	                        if (!anonymousMap.containsKey(replyUserId)) {
+	                            anonymousMap.put(replyUserId, anonymousCount++);
+	                        }
+	                        replyCommenter = "익명" + anonymousMap.get(replyUserId);
+	                    }
+	                }
+	        %>
+	            <div class="comment-item comment-reply">
+	                <strong <%= commenterStyle %>><%= replyCommenter %></strong>: <%= replyContent %> <span>(<%= replyDate %>)</span>
+	                <% if (replyUserId == userId && !"Y".equals(replyDeleted)) { %>
+	                    <a href="/board/editComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= replyCommentId %>">수정</a>
+	                    <a href="/board/deleteComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= replyCommentId %>" onclick="return confirm('댓글을 삭제하시겠습니까?')">삭제</a>
+	                <% } %>
+	            </div>
+	        <%
+	            }
+	            replyRs.close();
+	            replyStmt.close();
+	        %>
 	    </div>
 	<%
-	        // 부모 댓글의 대댓글 조회
-	        String replySql = "SELECT COMMENT_ID, USER_ID, CONTENT, CREATED_AT, deleted "
-	                        + "FROM comments WHERE PARENT_ID = ? ORDER BY CREATED_AT ASC";
-	        PreparedStatement replyStmt = conn.prepareStatement(replySql);
-	        replyStmt.setInt(1, parentCommentId);
-	        ResultSet replyRs = replyStmt.executeQuery();
-	
-	        while (replyRs.next()) {
-	            int replyCommentId = replyRs.getInt("COMMENT_ID");
-	            int replyUserId = replyRs.getInt("USER_ID");
-	            String replyContent = replyRs.getString("CONTENT");
-	            String replyDate = replyRs.getString("CREATED_AT");
-	            String replyDeleted = replyRs.getString("deleted");
-	            String replyCommenter = "";
-	
-	            // 삭제된 대댓글 처리
-	            if ("Y".equals(replyDeleted)) {
-	                replyContent = "삭제된 댓글입니다.";
-	                replyCommenter = "(삭제)";
-	                commenterStyle = "style='color:gray;'";
-	            } else {
-	                // 익명 번호 고정 (글쓴이는 무조건 "익명(글쓴이)")
-	                if (replyUserId == authorId) {
-	                    replyCommenter = "익명(글쓴이)";
-	                } else {
-	                    // 동일 사용자 ID에 대해 동일 익명 번호 할당
-	                    if (!anonymousMap.containsKey(replyUserId)) {
-	                        anonymousMap.put(replyUserId, anonymousCount++);
-	                    }
-	                    replyCommenter = "익명" + anonymousMap.get(replyUserId);
-	                }
-	            }
-	%>
-	        <div class="comment-item comment-reply">
-	            <strong <%= commenterStyle %>><%= replyCommenter %></strong>: <%= replyContent %> <span>(<%= replyDate %>)</span>
-	            <% if (replyUserId == userId && !"Y".equals(replyDeleted)) { %>
-	                <a href="/board/editComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= replyCommentId %>">수정</a>
-	                <a href="/board/deleteComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= replyCommentId %>" onclick="return confirm('댓글을 삭제하시겠습니까?')">삭제</a>
-	            <% } %>
-	        </div>
-	<%
-	        }
 	    }
+	    parentRs.close();
+	    parentStmt.close();
 	%>
 	</div>
 </div>

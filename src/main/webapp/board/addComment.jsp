@@ -9,7 +9,6 @@
     String content = "";
 
     try {
-        // 파라미터 유효성 검사
         if (request.getParameter("postId") != null) {
             postId = Integer.parseInt(request.getParameter("postId"));
         }
