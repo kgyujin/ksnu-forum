@@ -117,9 +117,11 @@
             %>
                 <div>
                     <img src="<%= request.getContextPath() + "/" + imagePath %>" alt="이미지" class="thumbnail">
-                    <label>
-                        <input type="checkbox" name="deleteImage" value="<%= imageId %>"> 삭제
-                    </label>
+                    <!-- 
+	                    <label>
+	                        <input type="checkbox" name="deleteImage" value="<%= imageId %>"> 삭제
+	                    </label>
+                     -->
                 </div>
             <%
                 }
