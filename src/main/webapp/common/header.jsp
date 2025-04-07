@@ -3,13 +3,13 @@
 <%@ page import="jakarta.servlet.http.HttpSession" %>
 <%@ page session="true" %>
 
-<%-- 
+<%
     if (!SessionCheck.isLoggedIn(session)) {
         response.sendRedirect("login.jsp");
         return;
     }
     String userId = SessionCheck.getUserId(session);
---%>
+%>
 
 <!DOCTYPE html>
 <html>
@@ -42,6 +42,7 @@
 
         .logo {
             display: flex;
+            padding-left: 30px;
             align-items: center;
             gap: 10px;
         }

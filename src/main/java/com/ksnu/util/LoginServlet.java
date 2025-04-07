@@ -54,7 +54,7 @@ public class LoginServlet extends HttpServlet {
             if (rs.next()) {
                 HttpSession session = request.getSession();
                 session.setAttribute("userId", stdNum);
-                out.println("<script>alert('로그인 성공!'); location.href='main.jsp';</script>");
+                out.println("<script>alert('로그인 성공!'); location.href='index.jsp';</script>");
             } else {
                 out.println("<script>alert('로그인 실패! 학번 또는 비밀번호 확인'); history.go(-1);</script>");
             }
