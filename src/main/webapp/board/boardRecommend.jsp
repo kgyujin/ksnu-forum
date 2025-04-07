@@ -11,10 +11,8 @@
     ResultSet rsCheck = null;
 
     String postId = request.getParameter("POST_ID");
-    String userId = request.getParameter("USER_ID");
     String boardIdParam = request.getParameter("BOARD_ID");
 
-    // BoardUtil을 사용하여 boardId를 정확히 가져옴
     int boardId = 0;
     try {
         boardId = Integer.parseInt(boardIdParam);
@@ -28,7 +26,7 @@
         String checkSql = "SELECT * FROM RECOMMENDS WHERE POST_ID = ? AND USER_ID = ?";
         pstmtCheck = conn.prepareStatement(checkSql);
         pstmtCheck.setString(1, postId);
-        pstmtCheck.setString(2, userId);
+        pstmtCheck.setInt(2, userId);
         rsCheck = pstmtCheck.executeQuery();
 
         if (rsCheck.next()) {
@@ -36,7 +34,7 @@
             String deleteSql = "DELETE FROM RECOMMENDS WHERE POST_ID = ? AND USER_ID = ?";
             pstmtDelete = conn.prepareStatement(deleteSql);
             pstmtDelete.setString(1, postId);
-            pstmtDelete.setString(2, userId);
+            pstmtDelete.setInt(2, userId);
             pstmtDelete.executeUpdate();
 
             // 추천 수 감소
@@ -49,8 +47,8 @@
             String insertSql = "INSERT INTO RECOMMENDS (POST_ID, USER_ID, BOARD_ID, REC_DATE) VALUES (?, ?, ?, NOW())";
             pstmtInsert = conn.prepareStatement(insertSql);
             pstmtInsert.setString(1, postId);
-            pstmtInsert.setString(2, userId);
-            pstmtInsert.setInt(3, boardId);  // BOARD_ID 추가
+            pstmtInsert.setInt(2, userId);
+            pstmtInsert.setInt(3, boardId);
             pstmtInsert.executeUpdate();
 
             // 추천 수 증가

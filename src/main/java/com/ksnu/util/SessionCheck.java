@@ -6,15 +6,18 @@ public class SessionCheck {
 
     public static boolean isLoggedIn(HttpSession session) {
         if (session == null) return false;
-        String userId = (String) session.getAttribute("userId");
-        return userId != null;
+
+        // 세션에서 userId를 Integer로 가져옴
+        Integer userId = (Integer) session.getAttribute("userId");
+        return userId != null && userId > 0;
     }
 
-    public static String getUserId(HttpSession session) {
+    public static int getUserId(HttpSession session) {
         if (isLoggedIn(session)) {
-            return (String) session.getAttribute("userId");
+            Integer userId = (Integer) session.getAttribute("userId");
+            return (userId != null) ? userId : -1;
         }
-        return null;
+        return -1;
     }
 
     public static void logout(HttpSession session) {

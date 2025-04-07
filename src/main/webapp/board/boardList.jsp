@@ -108,7 +108,7 @@
         while (postRs.next()) {
             int postId = postRs.getInt("POST_ID");
             String title = postRs.getString("TITLE");
-            int userId = postRs.getInt("USER_ID");
+            String postUserId = postRs.getString("USER_ID");
             String createdAt = postRs.getString("CREATED_AT");
 %>
     <tr>

@@ -30,7 +30,6 @@
         a:hover {
             color: blue;
         }
-        /* 페이지 네비게이션 스타일 */
         .pagination {
             margin: 20px auto;
             text-align: center;
@@ -60,8 +59,6 @@
     int pageNum = PagingUtil.getPageNum(request);
     int offset = PagingUtil.calculateOffset(pageNum, itemsPerPage);
 
-    int userId = 1; // 현재 사용자 ID를 1로 가정
-
     int totalScraps = 0;
     int totalPages = 1;
 
@@ -73,7 +70,7 @@
         ResultSet countRs = countStmt.executeQuery();
 
         if (countRs.next()) {
-        	totalScraps = countRs.getInt("total");
+            totalScraps = countRs.getInt("total");
             totalPages = PagingUtil.calculateTotalPages(totalScraps, itemsPerPage);
         }
 %>
@@ -88,10 +85,10 @@
     </tr>
 <%
         // 내가 스크랩한 글 목록 조회
-        String postSql = "SELECT P.BOARD_ID, P.POST_ID, P.TITLE, S.SCRAP_DATE" + 
-                         "FROM SCRAPS S, POSTS P WHERE S.USER_ID = ?" + 
-                         "AND S.POST_ID = P.POST_ID" + 
-                         "ORDER BY SCRAP_DATE DESC LIMIT ? OFFSET ?";
+        String postSql = "SELECT P.BOARD_ID, P.POST_ID, P.TITLE, S.SCRAP_DATE " +
+                         "FROM SCRAPS S JOIN POSTS P ON S.POST_ID = P.POST_ID " +
+                         "WHERE S.USER_ID = ? " +
+                         "ORDER BY S.SCRAP_DATE DESC LIMIT ? OFFSET ?";
         PreparedStatement postStmt = conn.prepareStatement(postSql);
         postStmt.setInt(1, userId);
         postStmt.setInt(2, itemsPerPage);
@@ -100,7 +97,7 @@
 
         int index = offset + 1;
         while (scrapRs.next()) {
-        	int boardId = scrapRs.getInt("BOARD_ID");
+            int boardId = scrapRs.getInt("BOARD_ID");
             int postId = scrapRs.getInt("POST_ID");
             String title = scrapRs.getString("TITLE");
             String scrapedAt = scrapRs.getString("SCRAP_DATE");
@@ -117,11 +114,11 @@
 
 <!-- 페이지 네비게이션 -->
 <div class="pagination">
-    <%= PagingUtil.generatePagination(pageNum, totalPages, "/board/myPosts.jsp", "") %>
+    <%= PagingUtil.generatePagination(pageNum, totalPages, "/board/myScraps.jsp", "") %>
 </div>
 <%
     } catch (Exception e) {
-        out.println("<p>게시글 조회 오류: " + e.getMessage() + "</p>");
+        out.println("<p>스크랩 글 조회 오류: " + e.getMessage() + "</p>");
     }
 %>
 

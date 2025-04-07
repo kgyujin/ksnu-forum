@@ -5,24 +5,10 @@
 <%@ page import="com.ksnu.service.PostService" %>
 
 <%
-    // 테스트용 임시 userId 지정
-    // 실제 운영 시에는 주석 처리 또는 제거 필요
-    if (session.getAttribute("userId") == null) {
-        session.setAttribute("userId", "1"); // 임시 userId 설정 (1로 지정)
-    }
-
     // 로그인 여부 확인
     Object userIdObj = session.getAttribute("userId");
     if (userIdObj == null) {
         response.sendRedirect("/login.jsp");
-        return;
-    }
-
-    int userId = 0;
-    try {
-        userId = Integer.parseInt(userIdObj.toString());
-    } catch (NumberFormatException e) {
-        out.println("<p>유효하지 않은 사용자입니다. 다시 로그인 해주세요.</p>");
         return;
     }
 

@@ -188,6 +188,11 @@
 </div>
 
 <div class="container">
+    <!-- Logout Button -->
+    <div class="logout-container" style="text-align: right; margin: 10px;">
+        <a href="/logout.jsp" class="logout-button" style="text-decoration: none; color: white; background-color: #20409a; padding: 5px 10px; border-radius: 3px;">로그아웃</a>
+    </div>
+	
     <!-- Sidebar -->
     <div class="sidebar">
         <h3>내 활동</h3>
@@ -202,7 +207,7 @@
             </li>
             <li>
                 <i class="fas fa-star"></i>
-                <a href="/board/myScrap.jsp">내 스크랩</a>
+                <a href="/board/myScraps.jsp">내 스크랩</a>
             </li>
         </ul>
     </div>

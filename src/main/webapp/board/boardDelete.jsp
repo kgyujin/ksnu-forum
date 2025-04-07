@@ -5,11 +5,6 @@
 <%@ page import="com.ksnu.service.PostService" %>
 
 <%
-    // 테스트용 임시 userId 지정
-    if (session.getAttribute("userId") == null) {
-        session.setAttribute("userId", "1"); // 임시 userId 설정 (1로 지정)
-    }
-
     // 로그인 여부 확인
     Object userIdObj = session.getAttribute("userId");
     if (userIdObj == null) {
@@ -17,7 +12,6 @@
         return;
     }
 
-    int userId = 0;
     try {
         userId = Integer.parseInt(userIdObj.toString());
     } catch (NumberFormatException e) {

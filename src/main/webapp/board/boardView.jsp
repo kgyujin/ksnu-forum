@@ -1,7 +1,9 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.*"%>
+<%@ page import="com.ksnu.util.BoardUtil" %>
 <%@ include file="/common/header.jsp" %>
 <%@ include file="/db/dbConnection.jsp" %>
-<%@ page import="com.ksnu.util.BoardUtil" %>
 
 <!DOCTYPE html>
 <html>
@@ -79,11 +81,6 @@
     int boardId = 0;
     int authorId = 0;
 
-    // 테스트용 임시 userId 지정
-    if (session.getAttribute("userId") == null) {
-        session.setAttribute("userId", "1");
-    }
-
     try {
         String postIdParam = request.getParameter("postId");
         String boardIdParam = request.getParameter("boardId");
@@ -102,7 +99,6 @@
             return;
         }
 
-        String userId = (String) session.getAttribute("userId");
         PreparedStatement postStmt = null;
         ResultSet postRs = null;
 
@@ -135,6 +131,7 @@
         <input type="hidden" name="BOARD_ID" value="<%= boardId %>">
         <button type="submit" class="reaction">공감 (<span id="recommendCount"><%= recommendCnt %></span>)</button>
 	</form>
+	
 	<!-- 스크랩 기능 -->
     <form action="/board/boardScrap.jsp" method="post" id="scrapForm">
         <input type="hidden" name="POST_ID" value="<%= postId %>">
@@ -142,8 +139,9 @@
         <input type="hidden" name="BOARD_ID" value="<%= boardId %>">
         <button type="submit" class="reaction">스크랩 (<span id="scrapCount"><%= scrapCnt %></span>)</button>
 	</form>
+	
     <h3>댓글</h3>
-    <form method="post" action="/board/addComment.jsp">
+    <form action="/board/addComment.jsp" method="post">
         <input type="hidden" name="postId" value="<%= postId %>">
         <input type="hidden" name="boardId" value="<%= boardId %>">
         <textarea name="content" class="comment-input" placeholder="댓글을 작성하세요." required></textarea>
@@ -151,13 +149,19 @@
     </form>
 	<div class="comment-section">
 	<%
+	    // 익명 번호를 사용자 ID에 따라 고정
+	    Map<Integer, Integer> anonymousMap = new LinkedHashMap<>(); // 순서 보장을 위해 LinkedHashMap 사용
+	    int anonymousCount = 1;
+	
+	    // 글쓴이의 익명 번호를 미리 설정하여 중복 방지
+	    anonymousMap.put(authorId, 0); // 글쓴이는 익명(글쓴이)로 고정
+	
 	    // 부모 댓글 먼저 조회
 	    String parentCommentSql = "SELECT COMMENT_ID, USER_ID, CONTENT, CREATED_AT, PARENT_ID, deleted "
 	                            + "FROM comments WHERE POST_ID = ? AND PARENT_ID = 0 ORDER BY CREATED_AT ASC";
 	    PreparedStatement parentStmt = conn.prepareStatement(parentCommentSql);
 	    parentStmt.setInt(1, postId);
 	    ResultSet parentRs = parentStmt.executeQuery();
-	    int anonymousCount = 1;
 	
 	    while (parentRs.next()) {
 	        int parentCommentId = parentRs.getInt("COMMENT_ID");
@@ -174,28 +178,35 @@
 	            parentCommenter = "(삭제)";
 	            commenterStyle = "style='color:gray;'";
 	        } else {
-	            // 작성자 표시
-	            parentCommenter = (parentUserId == authorId) ? "익명(글쓴이)" : "익명" + anonymousCount++;
+	            // 익명 번호 고정 (글쓴이는 무조건 "익명(글쓴이)")
+	            if (parentUserId == authorId) {
+	                parentCommenter = "익명(글쓴이)";
+	            } else {
+	                // 동일 사용자 ID에 대해 동일 익명 번호 할당
+	                if (!anonymousMap.containsKey(parentUserId)) {
+	                    anonymousMap.put(parentUserId, anonymousCount++);
+	                }
+	                parentCommenter = "익명" + anonymousMap.get(parentUserId);
+	            }
 	        }
-	
 	%>
 	    <div class="comment-item">
-		    <strong <%= commenterStyle %>><%= parentCommenter %></strong>: <%= parentContent %> <span>(<%= parentDate %>)</span>
-		    <% if (parentUserId == Integer.parseInt(userId) && !"Y".equals(parentDeleted)) { %>
-		        <a href="/board/editComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= parentCommentId %>&content=<%= java.net.URLEncoder.encode(parentContent, "UTF-8") %>">수정</a>
-		        <a href="/board/deleteComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= parentCommentId %>" onclick="return confirm('댓글을 삭제하시겠습니까?')">삭제</a>
-		    <% } %>
-		    <button class="reply-button" onclick="showReplyForm(<%= parentCommentId %>)">대댓글</button>
-		    <div id="replyForm<%= parentCommentId %>" style="display:none;">
-		        <form method="post" action="/board/addComment.jsp">
-		            <input type="hidden" name="postId" value="<%= postId %>">
-		            <input type="hidden" name="boardId" value="<%= boardId %>">
-		            <input type="hidden" name="parentId" value="<%= parentCommentId %>">
-		            <textarea name="content" class="comment-input" placeholder="대댓글 작성" required></textarea>
-		            <button type="submit">작성</button>
-		        </form>
-		    </div>
-		</div>
+	        <strong <%= commenterStyle %>><%= parentCommenter %></strong>: <%= parentContent %> <span>(<%= parentDate %>)</span>
+	        <% if (parentUserId == userId && !"Y".equals(parentDeleted)) { %>
+	            <a href="/board/editComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= parentCommentId %>&content=<%= java.net.URLEncoder.encode(parentContent, "UTF-8") %>">수정</a>
+	            <a href="/board/deleteComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= parentCommentId %>" onclick="return confirm('댓글을 삭제하시겠습니까?')">삭제</a>
+	        <% } %>
+	        <button class="reply-button" onclick="showReplyForm(<%= parentCommentId %>)">대댓글</button>
+	        <div id="replyForm<%= parentCommentId %>" style="display:none;">
+	            <form method="post" action="/board/addComment.jsp">
+	                <input type="hidden" name="postId" value="<%= postId %>">
+	                <input type="hidden" name="boardId" value="<%= boardId %>">
+	                <input type="hidden" name="parentId" value="<%= parentCommentId %>">
+	                <textarea name="content" class="comment-input" placeholder="대댓글 작성" required></textarea>
+	                <button type="submit">작성</button>
+	            </form>
+	        </div>
+	    </div>
 	<%
 	        // 부모 댓글의 대댓글 조회
 	        String replySql = "SELECT COMMENT_ID, USER_ID, CONTENT, CREATED_AT, deleted "
@@ -210,18 +221,29 @@
 	            String replyContent = replyRs.getString("CONTENT");
 	            String replyDate = replyRs.getString("CREATED_AT");
 	            String replyDeleted = replyRs.getString("deleted");
-	            String replyCommenter = (replyUserId == authorId) ? "익명(글쓴이)" : "익명" + anonymousCount++;
+	            String replyCommenter = "";
 	
 	            // 삭제된 대댓글 처리
 	            if ("Y".equals(replyDeleted)) {
 	                replyContent = "삭제된 댓글입니다.";
 	                replyCommenter = "(삭제)";
 	                commenterStyle = "style='color:gray;'";
+	            } else {
+	                // 익명 번호 고정 (글쓴이는 무조건 "익명(글쓴이)")
+	                if (replyUserId == authorId) {
+	                    replyCommenter = "익명(글쓴이)";
+	                } else {
+	                    // 동일 사용자 ID에 대해 동일 익명 번호 할당
+	                    if (!anonymousMap.containsKey(replyUserId)) {
+	                        anonymousMap.put(replyUserId, anonymousCount++);
+	                    }
+	                    replyCommenter = "익명" + anonymousMap.get(replyUserId);
+	                }
 	            }
 	%>
 	        <div class="comment-item comment-reply">
 	            <strong <%= commenterStyle %>><%= replyCommenter %></strong>: <%= replyContent %> <span>(<%= replyDate %>)</span>
-	            <% if (replyUserId == Integer.parseInt(userId) && !"Y".equals(replyDeleted)) { %>
+	            <% if (replyUserId == userId && !"Y".equals(replyDeleted)) { %>
 	                <a href="/board/editComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= replyCommentId %>">수정</a>
 	                <a href="/board/deleteComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= replyCommentId %>" onclick="return confirm('댓글을 삭제하시겠습니까?')">삭제</a>
 	            <% } %>
@@ -234,7 +256,7 @@
 </div>
 <div>
     <a href="/board/boardList.jsp?boardId=<%= boardId %>" class="back-button">글 목록</a>
-    <% if (Integer.parseInt(userId) == authorId) { %>
+    <% if (userId == authorId) { %>
         <a href="/board/boardUpdate.jsp?boardId=<%= boardId %>&postId=<%= postId %>" class="edit-button">수정</a>
         <a href="/board/boardDelete.jsp?boardId=<%= boardId %>&postId=<%= postId %>" class="delete-button">삭제</a>
     <% } %>

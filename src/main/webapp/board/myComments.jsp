@@ -60,8 +60,6 @@
     int pageNum = PagingUtil.getPageNum(request);
     int offset = PagingUtil.calculateOffset(pageNum, itemsPerPage);
 
-    int userId = 1; // 현재 사용자 ID를 1로 가정
-
     int totalPosts = 0;
     int totalPages = 1;
 

@@ -5,10 +5,15 @@
 
 <%
     if (!SessionCheck.isLoggedIn(session)) {
-        response.sendRedirect("login.jsp");
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
         return;
     }
-    String userId = SessionCheck.getUserId(session);
+
+    int userId = SessionCheck.getUserId(session);
+    if (userId == -1) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        return;
+    }
 %>
 
 <!DOCTYPE html>

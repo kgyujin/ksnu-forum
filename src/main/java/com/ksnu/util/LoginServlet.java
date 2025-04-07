@@ -24,7 +24,7 @@ public class LoginServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        String stdNum = request.getParameter("userid");  // ← jsp와 이름 맞
+        int userId = Integer.parseInt(request.getParameter("userId"));
         String password = request.getParameter("password");
 
         Connection conn = null;
@@ -45,15 +45,20 @@ public class LoginServlet extends HttpServlet {
             Class.forName(driver);
             conn = DriverManager.getConnection(url, dbUser, dbPass);
 
-            String sql = "SELECT * FROM users WHERE STD_NUM = ? AND PASSWORD = ?";
+            // 로그인 SQL 수정: USER_ID 조회
+            String sql = "SELECT USER_ID FROM users WHERE STD_NUM = ? AND PASSWORD = ?";
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, stdNum);
+            pstmt.setInt(1, userId);
             pstmt.setString(2, password);
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
+                userId = rs.getInt("USER_ID");  // int로 가져옴
+
+                // 세션에 USER_ID를 int로 저장
                 HttpSession session = request.getSession();
-                session.setAttribute("userId", stdNum);
+                session.setAttribute("userId", userId); // int로 저장
+
                 out.println("<script>alert('로그인 성공!'); location.href='index.jsp';</script>");
             } else {
                 out.println("<script>alert('로그인 실패! 학번 또는 비밀번호 확인'); history.go(-1);</script>");

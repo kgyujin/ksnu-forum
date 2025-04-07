@@ -1,21 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/common/header.jsp" %>
 <%@ include file="/db/dbConnection.jsp" %>
 
 <%
     int postId = 0;
-    int userId = 0;
     int boardId = 0;
     int parentId = 0;
     String content = "";
 
     try {
-        // userId는 세션에서 가져옴
-        if (session.getAttribute("userId") == null) {
-            session.setAttribute("userId", "1"); // 테스트용 userId
-        }
-
-        userId = Integer.parseInt((String) session.getAttribute("userId"));
-
         // 파라미터 유효성 검사
         if (request.getParameter("postId") != null) {
             postId = Integer.parseInt(request.getParameter("postId"));
