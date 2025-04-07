@@ -122,6 +122,23 @@
     <span><%= author %></span> | <span><%= createdAt %></span>
 </div>
 <div class="post-content"><%= content %></div>
+<%
+    String sql = "SELECT IMAGE_PATH FROM post_images WHERE POST_ID = ?";
+    PreparedStatement stmt = conn.prepareStatement(sql);
+    stmt.setInt(1, postId);
+    ResultSet rs = stmt.executeQuery();
+    while (rs.next()) {
+        String imagePath = rs.getString("IMAGE_PATH");
+%>
+    <div>
+        <!-- 이미지 경로 수정: 서버 경로를 포함한 URL로 설정 -->
+        <img src="<%= request.getContextPath() + "/" + imagePath %>" alt="첨부 이미지" style="max-width: 200px;">
+    </div>
+<%
+    }
+    rs.close();
+    stmt.close();
+%>
 <div class="comment-section">
     <!-- 추천 기능 -->
     <form action="/board/boardRecommend.jsp" method="post" id="recommendForm">

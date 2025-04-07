@@ -19,6 +19,7 @@
             padding: 10px;
             border: 1px solid #ddd;
             text-align: left;
+            vertical-align: middle;
         }
         th {
             background-color: #f2f2f2;
@@ -29,6 +30,15 @@
         }
         a:hover {
             color: blue;
+        }
+        /* 썸네일 스타일 */
+        .thumbnail {
+            float: right;
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-left: 10px;
         }
         /* 페이지 네비게이션 스타일 */
         .pagination {
@@ -110,10 +120,30 @@
             String title = postRs.getString("TITLE");
             String postUserId = postRs.getString("USER_ID");
             String createdAt = postRs.getString("CREATED_AT");
+
+            // 첫 번째 이미지 가져오기
+            String thumbSql = "SELECT IMAGE_PATH FROM post_images WHERE POST_ID = ? LIMIT 1";
+            PreparedStatement thumbStmt = conn.prepareStatement(thumbSql);
+            thumbStmt.setInt(1, postId);
+            ResultSet thumbRs = thumbStmt.executeQuery();
+
+            String thumbnail = "";
+            if (thumbRs.next()) {
+                thumbnail = request.getContextPath() + "/" + thumbRs.getString("IMAGE_PATH");
+            }
+            thumbRs.close();
+            thumbStmt.close();
 %>
     <tr>
         <td><%= index++ %></td>
-        <td><a href="/board/boardView.jsp?boardId=<%= boardId %>&postId=<%= postId %>"><%= title %></a></td>
+        <td>
+            <a href="/board/boardView.jsp?boardId=<%= boardId %>&postId=<%= postId %>">
+                <%= title %>
+                <% if (!thumbnail.isEmpty()) { %>
+                    <img src="<%= thumbnail %>" alt="썸네일" class="thumbnail">
+                <% } %>
+            </a>
+        </td>
         <td>익명</td>
         <td><%= createdAt %></td>
     </tr>

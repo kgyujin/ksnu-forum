@@ -5,11 +5,13 @@
 <%@ page import="com.ksnu.service.PostService" %>
 
 <%
+	int boardId = 0;
+	
     try {
         if ("POST".equalsIgnoreCase(request.getMethod())) {
             String title = request.getParameter("title");
             String content = request.getParameter("content");
-            int boardId = Integer.parseInt(request.getParameter("boardId"));
+            boardId = Integer.parseInt(request.getParameter("boardId"));
 
             // 게시글 추가
             boolean isSuccess = PostService.addPost(conn, boardId, userId, title, content);
@@ -34,7 +36,7 @@
 <body>
 <div class="form-container">
     <h2>게시글 작성</h2>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data" action="/board/uploadFiles.jsp">
         <div class="form-field">
             <label>제목 (최대 100자):</label>
             <input type="text" name="title" maxlength="100" required>
@@ -43,11 +45,16 @@
             <label>내용 (최대 2000자):</label>
             <textarea name="content" maxlength="2000" required></textarea>
         </div>
+        <div class="form-field">
+            <label>이미지 업로드 (최대 4개):</label>
+            <input type="file" name="images" multiple accept="image/*">
+        </div>
+        <!-- boardId를 Hidden 필드로 추가 -->
+        <input type="hidden" name="boardId" value="<%= request.getParameter("boardId") %>">
         <div class="button-group">
             <button type="submit">작성</button>
             <button type="button" onclick="location.href='/board/boardList.jsp?boardId=<%= request.getParameter("boardId") %>'">취소</button>
         </div>
-        <input type="hidden" name="boardId" value="<%= request.getParameter("boardId") %>">
     </form>
 </div>
 </body>

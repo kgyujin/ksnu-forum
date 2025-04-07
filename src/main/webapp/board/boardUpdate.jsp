@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/common/header.jsp" %>
 <%@ include file="/db/dbConnection.jsp" %>
 <%@ page import="com.ksnu.util.BoardUtil" %>
@@ -28,13 +28,11 @@
 
     // 기존 게시글 불러오기
     if ("GET".equalsIgnoreCase(request.getMethod())) {
-        PreparedStatement postStmt = null;
-        ResultSet postRs = null;
         try {
             String postSql = "SELECT TITLE, CONTENT FROM POSTS WHERE POST_ID = ?";
-            postStmt = conn.prepareStatement(postSql);
+            PreparedStatement postStmt = conn.prepareStatement(postSql);
             postStmt.setInt(1, postId);
-            postRs = postStmt.executeQuery();
+            ResultSet postRs = postStmt.executeQuery();
 
             if (postRs.next()) {
                 title = postRs.getString("TITLE");
@@ -43,34 +41,8 @@
                 out.println("<p>게시글을 찾을 수 없습니다.</p>");
                 return;
             }
-        } catch (Exception e) {
-            out.println("오류: " + e.getMessage());
-        } finally {
-            if (postRs != null) postRs.close();
-            if (postStmt != null) postStmt.close();
-        }
-    }
-
-    // 게시글 수정 처리
-    if ("POST".equalsIgnoreCase(request.getMethod())) {
-        title = request.getParameter("title");
-        content = request.getParameter("content");
-
-        try {
-            String updateSql = "UPDATE POSTS SET TITLE = ?, CONTENT = ?, UPDATED_AT = NOW() WHERE POST_ID = ? AND USER_ID = ?";
-            PreparedStatement updateStmt = conn.prepareStatement(updateSql);
-            updateStmt.setString(1, title);
-            updateStmt.setString(2, content);
-            updateStmt.setInt(3, postId);
-            updateStmt.setInt(4, userId);
-
-            int result = updateStmt.executeUpdate();
-
-            if (result > 0) {
-                response.sendRedirect("/board/boardView.jsp?boardId=" + boardId + "&postId=" + postId);
-            } else {
-                out.println("<p>게시글 수정에 실패했습니다.</p>");
-            }
+            postRs.close();
+            postStmt.close();
         } catch (Exception e) {
             out.println("오류: " + e.getMessage());
         }
@@ -102,6 +74,12 @@
             margin: 5px 0;
             box-sizing: border-box;
         }
+        .thumbnail {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin: 5px;
+        }
         .button-group {
             text-align: center;
         }
@@ -115,7 +93,7 @@
 
 <div class="form-container">
     <h2>게시글 수정</h2>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data" action="/board/updatePost.jsp">
         <div class="form-field">
             <label>제목 (최대 100자):</label>
             <input type="text" name="title" maxlength="100" required value="<%= title %>">
@@ -124,10 +102,43 @@
             <label>내용 (최대 2000자):</label>
             <textarea name="content" maxlength="2000" required><%= content %></textarea>
         </div>
+
+        <!-- 기존 이미지 표시 -->
+        <div class="form-field">
+            <label>기존 이미지:</label>
+            <%
+                String imgSql = "SELECT IMAGE_ID, IMAGE_PATH FROM post_images WHERE POST_ID = ?";
+                PreparedStatement imgStmt = conn.prepareStatement(imgSql);
+                imgStmt.setInt(1, postId);
+                ResultSet imgRs = imgStmt.executeQuery();
+                while (imgRs.next()) {
+                    int imageId = imgRs.getInt("IMAGE_ID");
+                    String imagePath = imgRs.getString("IMAGE_PATH");
+            %>
+                <div>
+                    <img src="<%= request.getContextPath() + "/" + imagePath %>" alt="이미지" class="thumbnail">
+                    <label>
+                        <input type="checkbox" name="deleteImage" value="<%= imageId %>"> 삭제
+                    </label>
+                </div>
+            <%
+                }
+                imgRs.close();
+                imgStmt.close();
+            %>
+        </div>
+
+        <!-- 새 이미지 업로드 -->
+        <div class="form-field">
+            <label>새 이미지 추가 (최대 4개):</label>
+            <input type="file" name="images" multiple accept="image/*">
+        </div>
+
         <div class="button-group">
             <button type="submit">수정</button>
             <button type="button" onclick="location.href='/board/boardView.jsp?boardId=<%= boardId %>&postId=<%= postId %>'">취소</button>
         </div>
+
         <input type="hidden" name="boardId" value="<%= boardId %>">
         <input type="hidden" name="postId" value="<%= postId %>">
     </form>

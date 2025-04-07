@@ -34,13 +34,45 @@
     // 게시글 삭제 처리
     if ("POST".equalsIgnoreCase(request.getMethod())) {
         try {
-            // 게시글 삭제 SQL
-            String deleteSql = "DELETE FROM POSTS WHERE POST_ID = ? AND USER_ID = ?";
-            PreparedStatement deleteStmt = conn.prepareStatement(deleteSql);
-            deleteStmt.setInt(1, postId);
-            deleteStmt.setInt(2, userId);
+            // 1. 이미지 경로 조회
+            String getImageSql = "SELECT IMAGE_PATH FROM post_images WHERE POST_ID = ?";
+            PreparedStatement getImageStmt = conn.prepareStatement(getImageSql);
+            getImageStmt.setInt(1, postId);
+            ResultSet rs = getImageStmt.executeQuery();
 
-            int result = deleteStmt.executeUpdate();
+            while (rs.next()) {
+                String imagePath = rs.getString("IMAGE_PATH");
+                String absolutePath = application.getRealPath("/") + imagePath;
+
+                // 2. 이미지 파일 삭제
+                File file = new File(absolutePath);
+                if (file.exists()) {
+                    if (file.delete()) {
+                        out.println("<p>이미지 파일 삭제 성공: " + imagePath + "</p>");
+                    } else {
+                        out.println("<p>이미지 파일 삭제 실패: " + imagePath + "</p>");
+                    }
+                }
+            }
+
+            rs.close();
+            getImageStmt.close();
+
+            // 3. 이미지 DB 정보 삭제
+            String deleteImageSql = "DELETE FROM post_images WHERE POST_ID = ?";
+            PreparedStatement deleteImageStmt = conn.prepareStatement(deleteImageSql);
+            deleteImageStmt.setInt(1, postId);
+            deleteImageStmt.executeUpdate();
+            deleteImageStmt.close();
+
+            // 4. 게시글 삭제 SQL
+            String deletePostSql = "DELETE FROM POSTS WHERE POST_ID = ? AND USER_ID = ?";
+            PreparedStatement deletePostStmt = conn.prepareStatement(deletePostSql);
+            deletePostStmt.setInt(1, postId);
+            deletePostStmt.setInt(2, userId);
+
+            int result = deletePostStmt.executeUpdate();
+            deletePostStmt.close();
 
             if (result > 0) {
                 response.sendRedirect("/board/boardList.jsp?boardId=" + boardId);
