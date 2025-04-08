@@ -1,4 +1,5 @@
 package com.ksnu.util;
+
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -10,12 +11,16 @@ public class LogoutServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
         HttpSession session = request.getSession(false);
         if (session != null) {
-            session.invalidate(); // 세션 제거
+            session.invalidate();
         }
-
         response.sendRedirect("login.jsp");
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doGet(request, response); // POST 요청도 GET처럼 처리
     }
 }

@@ -237,9 +237,10 @@
     <div style="color: gray; font-size: 20px;"><%= name %></div>
     <div style="color: gray; font-size: 16px; margin-bottom: 15px;"><%= stdNum %></div>
     
-    <form action="LogoutServlet" method="post">
-        <input type="submit" value="로그아웃" style="padding: 8px 16px; font-size: 16px; margin-bottom: 20px;">
-    </form>
+	<form action="LogoutServlet" method="get">
+	    <input type="submit" value="로그아웃" style="padding: 8px 16px; font-size: 16px; margin-bottom: 20px;">
+	</form>
+
 
     <div style="background-color: white; padding: 0; border-top: 1px solid #fff;">
         <a href="myPosts.jsp" style="display: block; background-color: #ddd; padding: 15px 0; text-decoration: none; color: black; font-size: 20px;">내가 쓴 글</a>
