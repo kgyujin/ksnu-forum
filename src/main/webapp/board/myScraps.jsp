@@ -9,48 +9,6 @@
 <head>
     <title>내가 스크랩한 글 목록</title>
     <meta charset="UTF-8">
-    <style>
-        table {
-            width: 80%;
-            border-collapse: collapse;
-            margin: 20px auto;
-        }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        a {
-            text-decoration: none;
-            color: #333;
-        }
-        a:hover {
-            color: blue;
-        }
-        .pagination {
-            margin: 20px auto;
-            text-align: center;
-        }
-        .pagination a, .pagination span {
-            margin: 0 3px;
-            padding: 5px 10px;
-            text-decoration: none;
-            color: black;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            display: inline-block;
-        }
-        .pagination a:hover {
-            background-color: #f2f2f2;
-        }
-        .pagination .active {
-            font-weight: bold;
-            background-color: #ddd;
-        }
-    </style>
 </head>
 <body>
 

@@ -25,9 +25,6 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        .reaction:hover {
-            background-color: #f0f0f0;
-        }
         .comment-section {
             margin-top: 20px;
             padding: 10px;
@@ -48,11 +45,10 @@
             margin-left: 20px;
             font-size: 12px;
             cursor: pointer;
-            color: blue;
         }
         .back-button, .edit-button, .delete-button {
             margin-top: 20px;
-            background-color: red;
+            background-color: #000;
             color: white;
             padding: 5px 10px;
             border-radius: 5px;

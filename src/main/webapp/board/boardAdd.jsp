@@ -46,7 +46,7 @@
             <textarea name="content" maxlength="2000" required></textarea>
         </div>
         <div class="form-field">
-            <label>이미지 업로드 (최대 4개):</label>
+            <label>이미지 업로드</label>
             <input type="file" name="images" multiple accept="image/*">
         </div>
         <!-- boardId를 Hidden 필드로 추가 -->

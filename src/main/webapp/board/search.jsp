@@ -25,7 +25,7 @@
         }
         .board-name {
             font-weight: bold;
-            color: blue;
+            color: grey;
         }
         .post-title {
             font-size: 18px;
@@ -78,7 +78,7 @@
         ResultSet searchRs = null;
 
         try {
-            // 게시글 수 조회 (기존 코드 유지)
+            // 게시글 수 조회
             String countSql = "SELECT COUNT(*) AS total FROM POSTS WHERE TITLE LIKE ?";
             countStmt = conn.prepareStatement(countSql);
             countStmt.setString(1, "%" + query + "%");
@@ -89,8 +89,8 @@
                 totalPages = PagingUtil.calculateTotalPages(totalPosts, itemsPerPage);
             }
 
-            // 게시글 검색 쿼리 (기존 코드 유지)
-            String searchSql = "SELECT b.BOARD_NAME, p.TITLE, p.POST_ID, p.CREATED_AT "
+            // 게시글 검색 쿼리 수정: BOARD_ID 추가
+            String searchSql = "SELECT b.BOARD_NAME, p.TITLE, p.POST_ID, p.BOARD_ID, p.CREATED_AT "
                              + "FROM POSTS p JOIN BOARDS b ON p.BOARD_ID = b.BOARD_ID "
                              + "WHERE p.TITLE LIKE ? ORDER BY p.CREATED_AT DESC LIMIT ? OFFSET ?";
             searchStmt = conn.prepareStatement(searchSql);
@@ -103,12 +103,14 @@
                 String boardName = searchRs.getString("BOARD_NAME");
                 String title = searchRs.getString("TITLE");
                 int postId = searchRs.getInt("POST_ID");
+                int boardId = searchRs.getInt("BOARD_ID");
                 String createdAt = searchRs.getString("CREATED_AT");
 %>
         <div class="result-item">
             <span class="board-name"><%= boardName %></span>
             <div class="post-title">
-                <a href="/board/boardView.jsp?postId=<%= postId %>"><%= title %></a>
+                <!-- 수정: boardId와 postId를 함께 넘김 -->
+                <a href="/board/boardView.jsp?boardId=<%= boardId %>&postId=<%= postId %>"><%= title %></a>
             </div>
             <div class="post-info">작성일: <%= createdAt %></div>
         </div>
@@ -131,7 +133,6 @@
 <!-- 페이지 네비게이션 -->
 <div class="pagination">
 <%
-    // 기존 코드와 동일하게 페이징 처리
     int groupSize = 10;
     int startPage = ((pageNum - 1) / groupSize) * groupSize + 1;
     int endPage = Math.min(startPage + groupSize - 1, totalPages);
