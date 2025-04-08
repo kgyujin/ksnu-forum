@@ -21,7 +21,7 @@
 
     int postId = 0;
     int boardId = 0;
-
+	
     // 게시글 ID와 게시판 ID 가져오기
     try {
         postId = Integer.parseInt(request.getParameter("postId"));
@@ -64,7 +64,28 @@
             deleteImageStmt.setInt(1, postId);
             deleteImageStmt.executeUpdate();
             deleteImageStmt.close();
+            
+         	// 스크랩 정보 삭제
+            String deleteScrapsSql = "DELETE FROM scraps WHERE POST_ID = ?";
+            PreparedStatement deleteScrapsStmt = conn.prepareStatement(deleteScrapsSql);
+            deleteScrapsStmt.setInt(1, postId);
+            deleteScrapsStmt.executeUpdate();
+            deleteScrapsStmt.close();
+            
+         	// 추천 정보 삭제
+            String deleteRecommendsSql = "DELETE FROM recommends WHERE POST_ID = ?";
+            PreparedStatement deleteRecommendsStmt = conn.prepareStatement(deleteRecommendsSql);
+            deleteRecommendsStmt.setInt(1, postId);
+            deleteRecommendsStmt.executeUpdate();
+            deleteRecommendsStmt.close();
 
+         	// 댓글 삭제 SQL
+            String deleteCommentsSql = "DELETE FROM comments WHERE POST_ID = ?";
+            PreparedStatement deleteCommentsStmt = conn.prepareStatement(deleteCommentsSql);
+            deleteCommentsStmt.setInt(1, postId);
+            deleteCommentsStmt.executeUpdate();
+            deleteCommentsStmt.close();
+            
             // 4. 게시글 삭제 SQL
             String deletePostSql = "DELETE FROM POSTS WHERE POST_ID = ? AND USER_ID = ?";
             PreparedStatement deletePostStmt = conn.prepareStatement(deletePostSql);
