@@ -8,339 +8,417 @@
 <head>
     <title>군산대학교 커뮤니티</title>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
     <style>
-        body {
-            font-family: 'Pretendard', sans-serif;
-            background-color: #f5f5f5;
-        }
-
-        .container {
-            display: flex;
-            margin: 20px;
-        }
-
-        .sidebar {
-            width: 200px;
-            background-color: #f9f9f9;
-            border: 1px solid #e0e0e0;s
-            margin-right: 20px;
-            border-radius: 5px;
-            padding: 10px;
-        }
-
-        .sidebar h3 {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #20409a;
-        }
-
-        .sidebar ul {
-            list-style: none;
+        * {
+            margin: 0;
             padding: 0;
-        }
-
-        .sidebar li {
-            padding: 10px;
-            margin: 5px 0;
-            background-color: #fff;
-            border-radius: 5px;
-            border: 1px solid #e0e0e0;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-        }
-
-        .sidebar li:hover {
-            background-color: #e0e0e0;
-        }
-
-        .sidebar li a {
-            text-decoration: none;
-            color: #333;
-            margin-left: 5px;
-        }
-
-        .sidebar li i {
-            font-size: 16px;
-            color: #20409a;
-        }
-
-        .hot-posts {
-            margin-left: 20px;
-            padding: 15px;
-            background-color: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 5px;
-            width: 300px;
-        }
-
-        .hot-posts h3 {
-            font-size: 18px;
-            font-weight: bold;
-            color: #c94c00;
-            margin-bottom: 10px;
-        }
-
-        .hot-posts ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .hot-posts li {
-            padding: 5px 0;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .hot-posts a {
-            text-decoration: none;
-            color: #333;
-        }
-
-        .hot-posts a:hover {
-            color: #20409a;
-        }
-
-        .boards-wrapper {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            flex: 1;
-        }
-
-        .board-section {
-            width: calc(50% - 10px);
-            background-color: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 5px;
-            padding: 15px;
             box-sizing: border-box;
+            font-family: 'Pretendard', sans-serif;
         }
 
-        .board-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #c94c00;
-            margin-bottom: 10px;
+        body {
+            color: #333;
+            line-height: 1.6;
+            background-color: #f8f9fa;
         }
 
-        .post-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .post-item {
+        .main-container {
             display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
-            border-bottom: 1px solid #eee;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
         }
 
-        .post-date {
-            font-size: 12px;
-            color: gray;
-            white-space: nowrap;
-        }
-
-        a {
-            text-decoration: none;
-            color: black;
-        }
-
-        a:hover {
-            color: #20409a;
-        }
-
+        /* 검색 영역 */
         .search-container {
+            max-width: 1200px;
+            margin: 20px auto 10px;
             text-align: center;
-            margin: 20px;
+            padding: 0 20px;
         }
 
         .search-input {
-            padding: 5px;
-            font-size: 16px;
-            width: 300px;
-            margin-right: 5px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+            width: 250px;
         }
 
         .search-button {
-            padding: 5px 10px;
-            font-size: 16px;
             background-color: #20409a;
             color: white;
             border: none;
-            border-radius: 3px;
+            padding: 8px 15px;
+            border-radius: 0 4px 4px 0;
             cursor: pointer;
         }
 
-        .search-button:hover {
-            background-color: #c94c00;
+        /* 사이드바 영역 */
+        .profile-sidebar {
+            width: 250px;
+            background-color: #f0f0f0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
-        .logout-container {
-            position: absolute;
-            top: 10px;
-            right: 10px;
+        .profile-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #ddd;
+            margin-bottom: 15px;
+        }
+
+        .profile-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .profile-id {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
         }
 
         .logout-button {
-            text-decoration: none;
-            color: white;
             background-color: #20409a;
-            padding: 5px 10px;
-            border-radius: 3px;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .delete-account-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .menu-links {
+            width: 100%;
+            margin-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        .menu-link {
+            display: block;
+            padding: 12px 0;
+            text-align: center;
+            color: #333;
+            text-decoration: none;
+            font-size: 16px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .menu-link:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* 컨텐츠 영역 */
+        .content {
+            flex: 1;
+        }
+
+        /* 게시판 섹션 */
+        .board-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .board-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .board-header {
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .board-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #20409a;
+        }
+
+        .board-more {
+            color: #666;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .board-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .board-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-title {
+            color: #333;
+            text-decoration: none;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .item-title:hover {
+            color: #20409a;
+        }
+
+        .item-date {
+            color: #999;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        /* 핫 게시물 영역 */
+        .hot-posts {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .hot-posts-header {
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #dc3545;
+        }
+
+        .hot-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .hot-item:last-child {
+            border-bottom: none;
+        }
+
+        .hot-item a {
+            color: #333;
+            text-decoration: none;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .hot-item a:hover {
+            color: #dc3545;
+        }
+
+        /* 반응형 스타일 */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .profile-sidebar {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            
+            .board-section {
+                min-width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-
-<div class="search-container">
-    <form action="/board/search.jsp" method="get">
-        <input type="text" name="query" placeholder="검색어를 입력하세요" class="search-input">
-        <button type="submit" class="search-button">검색</button>
-    </form>
-</div>
-
-<div class="logout-container">
-    <a href="/logout.jsp" class="logout-button">로그아웃</a>
-</div>
-
-<!-- Sidebar / 사이드바 시작 -->
-<%
-    String stdNum = "";
-    String name = "";
-
-    
-    
-    if (userId > 0) {
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-
-        try {
-            String sql = "SELECT STD_NUM, NAME FROM users WHERE USER_ID = ?";
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, userId);
-            rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                stdNum = rs.getString("STD_NUM");
-                name = rs.getString("NAME");
-            }
-        } catch (Exception e) {
-            out.println("<script>alert('사용자 정보를 불러오는 중 오류 발생: " + e.getMessage() + "');</script>");
-        }
-    }
-%>
-
-<div style="width: 250px; background-color: #ddd; text-align: center; padding: 20px; border: 1px solid #ccc;">
-    <img src="images/profile.png" alt="프로필 이미지" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px;">
-    <div style="color: gray; font-size: 20px;"><%= name %></div>
-    <div style="color: gray; font-size: 16px; margin-bottom: 15px;"><%= stdNum %></div>
-    
-	<form action="LogoutServlet" method="get">
-	    <input type="submit" value="로그아웃" style="padding: 8px 16px; font-size: 16px; margin-bottom: 20px;">
-	</form>
-	<form action="/DeleteAccountServlet" method="post" style="display: inline;">
-        <button type="submit" class="logout-button" style="background-color: red;">회원 탈퇴</button>
-    </form>
-    <div style="background-color: white; padding: 0; border-top: 1px solid #fff;">
-        <a href="myPosts.jsp" style="display: block; background-color: #ddd; padding: 15px 0; text-decoration: none; color: black; font-size: 20px;">내가 쓴 글</a>
-        <a href="myComments.jsp" style="display: block; background-color: #ddd; padding: 15px 0; text-decoration: none; color: black; font-size: 20px;">댓글 단 글</a>
-        <a href="myScraps.jsp" style="display: block; background-color: #ddd; padding: 15px 0; text-decoration: none; color: black; font-size: 20px;">내 스크랩</a>
+    <!-- 검색 영역 -->
+    <div class="search-container">
+        <form action="/board/search.jsp" method="get">
+            <input type="text" name="query" placeholder="검색어를 입력하세요" class="search-input">
+            <button type="submit" class="search-button">검색</button>
+        </form>
     </div>
-</div>
 
-<!-- Sidebar / 사이드바 종료 -->
-
-<div class="container">
-    <div class="boards-wrapper">
+    <div class="main-container">
+        <!-- 사이드바 영역 -->
         <%
-            PreparedStatement boardStmt = null;
-            PreparedStatement postStmt = null;
-            PreparedStatement hotPostStmt = null;
-            ResultSet boardRs = null;
-            ResultSet postRs = null;
-            ResultSet hotPostRs = null;
+            String stdNum = "";
+            String name = "";
+            
+            if (userId > 0) {
+                PreparedStatement pstmt = null;
+                ResultSet rs = null;
 
-            try {
-                String boardSql = "SELECT BOARD_ID, BOARD_NAME FROM BOARDS ORDER BY BOARD_ID LIMIT 4";
-                boardStmt = conn.prepareStatement(boardSql);
-                boardRs = boardStmt.executeQuery();
-
-                while (boardRs.next()) {
-                    int boardId = boardRs.getInt("BOARD_ID");
-                    String boardName = boardRs.getString("BOARD_NAME");
-        %>
-        <div class="board-section">
-            <div class="board-title">
-                <a href="/board/boardList.jsp?boardId=<%= boardId %>"><%= boardName %></a>
-            </div>
-            <ul class="post-list">
-                <%
-                    String postSql = "SELECT POST_ID, TITLE, CREATED_AT FROM POSTS WHERE BOARD_ID = ? ORDER BY CREATED_AT DESC LIMIT 4";
-                    postStmt = conn.prepareStatement(postSql);
-                    postStmt.setInt(1, boardId);
-                    postRs = postStmt.executeQuery();
-
-                    while (postRs.next()) {
-                        int postId = postRs.getInt("POST_ID");
-                        String title = postRs.getString("TITLE");
-                        String createdAt = postRs.getString("CREATED_AT");
-                %>
-                <li class="post-item">
-                    <a href="/board/boardView.jsp?boardId=<%= boardId %>&postId=<%= postId %>"><%= title %></a>
-                    <span class="post-date"><%= createdAt.substring(5, 16) %></span>
-                </li>
-                <%
-                    } // end of post while
-                %>
-            </ul>
-        </div>
-        <%
-                } // end of board while
-
-                // HOT 게시물은 게시판 루프 밖에서 한 번만 출력
-                String hotPostSql = "SELECT POST_ID, TITLE, BOARD_ID, CREATED_AT, RECOMMEND_CNT " +
-                                    "FROM POSTS WHERE CREATED_AT >= DATE_SUB(NOW(), INTERVAL 7 DAY) " +
-                                    "ORDER BY RECOMMEND_CNT DESC LIMIT 4";
-                hotPostStmt = conn.prepareStatement(hotPostSql);
-                hotPostRs = hotPostStmt.executeQuery();
-        %>
-        <div class="hot-posts">
-            <h3>HOT 게시물</h3>
-            <ul>
-                <%
-                    while (hotPostRs.next()) {
-                        int postId = hotPostRs.getInt("POST_ID");
-                        String title = hotPostRs.getString("TITLE");
-                        int hotBoardId = hotPostRs.getInt("BOARD_ID");
-                %>
-                <li>
-                    <a href="/board/boardView.jsp?boardId=<%= hotBoardId %>&postId=<%= postId %>"><%= title %></a>
-                </li>
-                <%
-                    }
-                %>
-            </ul>
-        </div>
-        <%
-            } catch (Exception e) {
-                out.println("데이터 조회 오류: " + e.getMessage());
-            } finally {
                 try {
-                    if (hotPostRs != null) hotPostRs.close();
-                    if (postRs != null) postRs.close();
-                    if (boardRs != null) boardRs.close();
-                    if (hotPostStmt != null) hotPostStmt.close();
-                    if (postStmt != null) postStmt.close();
-                    if (boardStmt != null) boardStmt.close();
-                    if (conn != null) conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                    String sql = "SELECT STD_NUM, NAME FROM users WHERE USER_ID = ?";
+                    pstmt = conn.prepareStatement(sql);
+                    pstmt.setInt(1, userId);
+                    rs = pstmt.executeQuery();
+
+                    if (rs.next()) {
+                        stdNum = rs.getString("STD_NUM");
+                        name = rs.getString("NAME");
+                    }
+                } catch (Exception e) {
+                    out.println("<script>alert('사용자 정보를 불러오는 중 오류 발생: " + e.getMessage() + "');</script>");
                 }
             }
         %>
+        <div class="profile-sidebar">
+            <div class="profile-image">
+            	<img src="images/profile.png" alt="프로필 이미지" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px;">
+            </div>
+            <div class="profile-name"><%= name %></div>
+            <div class="profile-id"><%= stdNum %></div>
+            
+            <form action="LogoutServlet" method="get">
+                <input type="submit" value="로그아웃" class="logout-button">
+            </form>
+            <form action="/DeleteAccountServlet" method="post">
+                <button type="submit" class="delete-account-button">회원 탈퇴</button>
+            </form>
+            
+            <div class="menu-links">
+                <a href="board/myPosts.jsp" class="menu-link">내가 쓴 글</a>
+                <a href="board/myComments.jsp" class="menu-link">댓글 단 글</a>
+                <a href="board/myScraps.jsp" class="menu-link">내 스크랩</a>
+            </div>
+        </div>
+
+        <!-- 컨텐츠 영역 -->
+        <div class="content">
+            <!-- HOT 게시물 영역 -->
+            <div class="hot-posts">
+                <div class="hot-posts-header">HOT 게시물</div>
+                <%
+                    PreparedStatement hotPostStmt = null;
+                    ResultSet hotPostRs = null;
+                    
+                    try {
+                        String hotPostSql = "SELECT POST_ID, TITLE, BOARD_ID, CREATED_AT, RECOMMEND_CNT " +
+                                            "FROM POSTS WHERE CREATED_AT >= DATE_SUB(NOW(), INTERVAL 7 DAY) " +
+                                            "ORDER BY RECOMMEND_CNT DESC LIMIT 4";
+                        hotPostStmt = conn.prepareStatement(hotPostSql);
+                        hotPostRs = hotPostStmt.executeQuery();
+                        
+                        while (hotPostRs.next()) {
+                            int postId = hotPostRs.getInt("POST_ID");
+                            String title = hotPostRs.getString("TITLE");
+                            int hotBoardId = hotPostRs.getInt("BOARD_ID");
+                %>
+                <div class="hot-item">
+                    <a href="/board/boardView.jsp?boardId=<%= hotBoardId %>&postId=<%= postId %>"><%= title %></a>
+                </div>
+                <%
+                        }
+                    } catch (Exception e) {
+                        out.println("HOT 게시물 데이터 조회 오류: " + e.getMessage());
+                    } finally {
+                        try {
+                            if (hotPostRs != null) hotPostRs.close();
+                            if (hotPostStmt != null) hotPostStmt.close();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                %>
+            </div>
+
+            <!-- 게시판 영역 -->
+            <div class="board-container">
+                <%
+                    PreparedStatement boardStmt = null;
+                    PreparedStatement postStmt = null;
+                    ResultSet boardRs = null;
+                    ResultSet postRs = null;
+
+                    try {
+                        String boardSql = "SELECT BOARD_ID, BOARD_NAME FROM BOARDS ORDER BY BOARD_ID LIMIT 4";
+                        boardStmt = conn.prepareStatement(boardSql);
+                        boardRs = boardStmt.executeQuery();
+
+                        while (boardRs.next()) {
+                            int boardId = boardRs.getInt("BOARD_ID");
+                            String boardName = boardRs.getString("BOARD_NAME");
+                %>
+                <div class="board-section">
+                    <div class="board-header">
+                        <div class="board-title"><%= boardName %></div>
+                        <a href="/board/boardList.jsp?boardId=<%= boardId %>" class="board-more">더보기</a>
+                    </div>
+                    <%
+                        String postSql = "SELECT POST_ID, TITLE, CREATED_AT FROM POSTS WHERE BOARD_ID = ? ORDER BY CREATED_AT DESC LIMIT 4";
+                        postStmt = conn.prepareStatement(postSql);
+                        postStmt.setInt(1, boardId);
+                        postRs = postStmt.executeQuery();
+
+                        while (postRs.next()) {
+                            int postId = postRs.getInt("POST_ID");
+                            String title = postRs.getString("TITLE");
+                            String createdAt = postRs.getString("CREATED_AT");
+                    %>
+                    <div class="board-item">
+                        <a href="/board/boardView.jsp?boardId=<%= boardId %>&postId=<%= postId %>" class="item-title"><%= title %></a>
+                        <span class="item-date"><%= createdAt.substring(5, 16) %></span>
+                    </div>
+                    <%
+                        } // end of post while
+                    %>
+                </div>
+                <%
+                        } // end of board while
+                    } catch (Exception e) {
+                        out.println("게시판 데이터 조회 오류: " + e.getMessage());
+                    } finally {
+                        try {
+                            if (postRs != null) postRs.close();
+                            if (boardRs != null) boardRs.close();
+                            if (postStmt != null) postStmt.close();
+                            if (boardStmt != null) boardStmt.close();
+                            if (conn != null) conn.close();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                %>
+            </div>
+        </div>
     </div>
-</div>
 </body>
 </html>

@@ -59,9 +59,9 @@ public class LoginServlet extends HttpServlet {
                 HttpSession session = request.getSession();
                 session.setAttribute("userId", userId); // int로 저장
 
-                out.println("<script>alert('로그인 성공!'); location.href='index.jsp';</script>");
+                out.println("<script>location.href='index.jsp';</script>");
             } else {
-                out.println("<script>alert('로그인 실패! 학번 또는 비밀번호 확인'); history.go(-1);</script>");
+                out.println("<script>alert('입력한 학번 또는 비밀번호를 확인해주세요.'); history.go(-1);</script>");
             }
 
         } catch (Exception e) {

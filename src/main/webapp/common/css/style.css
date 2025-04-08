@@ -1,359 +1,305 @@
-/* style.css */
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-
-/* 전역 스타일 */
+/* 기본 스타일 */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Pretendard', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Pretendard', sans-serif;
 }
 
 body {
-  color: #333;
-  line-height: 1.6;
-  background-color: #f8f9fa;
-  padding: 20px;
+    color: #333;
+    line-height: 1.6;
+    background-color: #f8f9fa;
 }
 
-/* 메인 컨테이너 */
+/* 컨테이너 스타일 - 너비 제한 */
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 20px;
 }
 
-/* 제목 스타일 */
-h1, h2, h3, h4, h5, h6 {
-  color: #20409A;
-  margin-bottom: 15px;
-  font-weight: 600;
-}
-
+/* 게시판 제목 스타일 */
 h2 {
-  text-align: center;
-  padding: 20px 0;
-  font-size: 1.8rem;
-  position: relative;
+    color: #20409a;
+    margin-bottom: 20px;
+    font-weight: 600;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+    text-align: center;
 }
 
-h2:after {
-  content: '';
-  display: block;
-  width: 50px;
-  height: 3px;
-  background-color: #c94c00;
-  margin: 10px auto 0;
+/* 글 작성 버튼 스타일 */
+.add-button {
+    display: inline-block;
+    background-color: #20409a;
+    color: white !important;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 20px;
+    transition: background-color 0.2s;
 }
 
-h3 {
-  font-size: 1.4rem;
-  padding: 15px 0 10px;
-  border-bottom: 1px solid #e9ecef;
-  margin-bottom: 15px;
+.add-button:hover {
+    background-color: #163172;
 }
 
-/* 게시글 카드 스타일 수정 */
+/* 게시글 카드 스타일 */
 .post-card {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    margin: 8px auto;
-    border: 1px solid #ddd;
+    background-color: #fff;
     border-radius: 8px;
-    max-width: 700px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    background-color: white;
+    padding: 15px;
+    margin-bottom: 15px;
     cursor: pointer;
-    transition: box-shadow 0.3s, transform 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .post-card:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .post-content {
-  flex-grow: 1;
-  margin-right: 12px;
+    flex: 1;
+    padding-right: 15px;
 }
 
 .post-title {
-    font-size: 1rem;
-    font-weight: bold;
-    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
     overflow: hidden;
-    white-space: nowrap;
     text-overflow: ellipsis;
-    color: #20409A;
+    white-space: nowrap;
 }
 
 .post-info {
-  font-size: 0.875rem;
-  color: #666;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    max-height: 42px;
 }
 
 .post-icons {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-top: 4px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: #999;
 }
 
 .icon {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 0.875rem;
-  color: #555;
-}
-
-.icon img {
-  width: 14px;
-  height: 14px;
+    margin-right: 15px;
 }
 
 .timestamp {
-  font-size: 0.8rem;
-  color: #999;
-  margin-left: 5px;
+    margin-left: auto;
+    font-size: 12px;
 }
 
+/* 썸네일 이미지 스타일 */
 .thumbnail {
-  width: 70px;
-  height: 70px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-left: 12px;
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
 }
 
-/* 버튼 스타일 */
-.button, .add-button, button {
-  display: inline-block;
-  background-color: #20409A;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: background-color 0.3s, transform 0.2s;
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  margin: 5px 0;
-}
-
-.button:hover, .add-button:hover, button:hover {
-  background-color: #162d6f;
-  transform: translateY(-2px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-/* 테이블 스타일 */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px auto;
-  background-color: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-}
-
-th, td {
-  padding: 12px 15px;
-  text-align: left;
-  border-bottom: 1px solid #e9ecef;
-}
-
-th {
-  background-color: #20409A;
-  color: white;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-/* 링크 스타일 */
-a {
-  text-decoration: none;
-  color: #20409A;
-  transition: color 0.3s;
-}
-
-a:hover {
-  color: #c94c00;
-}
-
-/* 페이지 네비게이션 스타일 */
-/* 페이지 네비게이션 스타일 */
+/* 페이지네이션 스타일 - 개선된 버전 */
 .pagination {
-    margin: 30px auto;
-    text-align: center;
     display: flex;
     justify-content: center;
+    margin: 30px 0;
+    gap: 8px;
 }
 
-.pagination a, .pagination span {
-    margin: 0 3px;
-    padding: 8px 14px;
-    text-decoration: none;
-    color: #333;
+.pagination a, .pagination strong {
+    display: inline-block;
+    padding: 8px 12px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    display: inline-block;
-    transition: all 0.3s;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.2s;
 }
 
-/* 현재 페이지 강조 스타일 */
-.pagination .active {
-    background-color: #20409A;  /* 메인 컬러 */
-    color: white;               /* 흰색 글자 */
-    border: 1px solid #20409A;  /* 메인 컬러 테두리 */
-    font-weight: bold;
-    cursor: default;
-}
-
-/* 링크와 현재 페이지의 구분을 명확히 하기 위한 효과 */
 .pagination a:hover {
     background-color: #f0f0f0;
-    border-color: #c94c00;
-    color: #c94c00;
 }
 
-.pagination a:active {
-    background-color: #c94c00;
+/* 현재 선택된 페이지 스타일 - 메인 컬러 적용 */
+.pagination .current,
+.pagination a.active,
+.pagination strong,
+.pagination span.current {
+    background-color: #20409a !important;
+    color: white !important;
+    border: 1px solid #20409a !important;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-weight: 600;
+}
+
+/* 페이지네이션 숫자만 스타일링 */
+.pagination span.page-num {
+    display: inline-block;
+    padding: 8px 12px;
+}
+
+/* 메인 페이지 스타일 */
+.main-container {
+    display: flex;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* 검색 영역 */
+.search-container {
+    max-width: 1200px;
+    margin: 20px auto 10px;
+    text-align: center;
+    padding: 0 20px;
+}
+
+.search-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px 0 0 4px;
+    width: 250px;
+}
+
+.search-button {
+    background-color: #20409a;
     color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
 }
 
-@media (max-width: 768px) {
-    .pagination a, .pagination span {
-        padding: 6px 10px;
-        margin: 0 2px;
-        font-size: 0.9rem;
-    }
-
-    .pagination .active {
-        padding: 6px 10px;
-    }
+/* 사이드바 영역 */
+.profile-sidebar {
+    width: 250px;
+    background-color: #f0f0f0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 /* 반응형 스타일 */
 @media (max-width: 768px) {
-  .post-card {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+    .post-card {
+        flex-direction: column;
+    }
+    
+    .post-content {
+        padding-right: 0;
+        margin-bottom: 10px;
+    }
+    
+    .thumbnail {
+        width: 100%;
+        height: 150px;
+    }
 
-  .thumbnail {
-    width: 50px;
-    height: 50px;
-  }
+    .main-container {
+        flex-direction: column;
+    }
+    
+    .profile-sidebar {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
 }
 
 /* 게시글 작성 페이지 스타일 */
 .form-container {
-    max-width: 600px;
-    margin: 30px auto;
-    padding: 30px;
-    background-color: white;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .form-container h2 {
+    font-size: 24px;
+    color: #20409a;
     margin-bottom: 20px;
-    color: #20409A;
     text-align: center;
 }
 
 .form-field {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .form-field label {
     display: block;
     margin-bottom: 8px;
-    font-weight: 500;
+    font-weight: 600;
     color: #333;
 }
 
-.form-field input[type="text"],
-.form-field textarea,
-.form-field input[type="file"] {
+.form-field input[type="text"], .form-field textarea {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    font-size: 1rem;
-    transition: border-color 0.3s;
-    margin-top: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+    margin-bottom: 5px;
 }
 
-.form-field input[type="text"]:focus,
-.form-field textarea:focus,
-.form-field input[type="file"]:focus {
-    border-color: #20409A;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(32, 64, 154, 0.2);
-}
-
-textarea {
+.form-field textarea {
+    height: 200px;
     resize: vertical;
-    min-height: 150px;
+}
+
+.form-field input[type="file"] {
+    margin-top: 8px;
 }
 
 .button-group {
     display: flex;
     justify-content: center;
     gap: 10px;
-    margin-top: 20px;
 }
 
 .button-group button {
     padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: 500;
+    background-color: #20409a;
+    color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.2s;
 }
 
-button[type="submit"] {
-    background-color: #20409A;
-    color: white;
+.button-group button:hover {
+    background-color: #163172;
 }
 
-button[type="submit"]:hover {
-    background-color: #162d6f;
+.button-group button[type="button"] {
+    background-color: #dc3545;
 }
 
-button[type="button"] {
-    background-color: #6c757d;
-    color: white;
-}
-
-button[type="button"]:hover {
-    background-color: #5a6268;
-}
-
-@media (max-width: 768px) {
-    .form-container {
-        padding: 20px;
-    }
-
-    .form-field input[type="text"],
-    .form-field textarea {
-        font-size: 0.95rem;
-    }
-
-    .button-group {
-        flex-direction: column;
-    }
-
-    .button-group button {
-        width: 100%;
-        margin: 5px 0;
-    }
+.button-group button[type="button"]:hover {
+    background-color: #a71d2a;
 }
