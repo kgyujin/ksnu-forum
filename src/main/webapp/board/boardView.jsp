@@ -97,8 +97,8 @@
         PreparedStatement postStmt = null;
         ResultSet postRs = null;
 
-        String postSql = "SELECT p.TITLE, p.CONTENT, u.NAME, p.CREATED_AT, p.RECOMMEND_CNT, p.SCRAP_CNT, p.USER_ID "
-                       + "FROM POSTS p JOIN USERS u ON p.USER_ID = u.USER_ID WHERE POST_ID = ?";
+        String postSql = "SELECT p.TITLE, p.CONTENT, u.NAME, p.CREATED_AT, p.RECOMMEND_CNT, p.SCRAP_CNT, p.USER_ID, u.IS_DELETED "
+                + "FROM POSTS p LEFT JOIN USERS u ON p.USER_ID = u.USER_ID WHERE POST_ID = ?";
         postStmt = conn.prepareStatement(postSql);
         postStmt.setInt(1, postId);
         postRs = postStmt.executeQuery();
@@ -106,11 +106,18 @@
         if (postRs.next()) {
             String title = postRs.getString("TITLE");
             String content = postRs.getString("CONTENT");
-            String author = "익명";
+            String author = "";
             String createdAt = postRs.getString("CREATED_AT");
+            String isDeleted = postRs.getString("IS_DELETED");
             int recommendCnt = postRs.getInt("RECOMMEND_CNT");
             int scrapCnt = postRs.getInt("SCRAP_CNT");
-            authorId = postRs.getInt("USER_ID");
+            
+            // 탈퇴한 유저 처리
+            if ("Y".equals(isDeleted) || author == null) {
+                author = "(알 수 없음)";
+            } else {
+                author = "익명";
+            }
 %>
 
 <div class="post-title"><%= title %></div>
@@ -183,39 +190,47 @@
 	    allCommentsStmt.close();
 	
 	    // 두 번째 쿼리: 부모 댓글만 조회
-	    String parentCommentSql = "SELECT COMMENT_ID, USER_ID, CONTENT, CREATED_AT, PARENT_ID, deleted "
-	                            + "FROM comments WHERE POST_ID = ? AND PARENT_ID = 0 ORDER BY CREATED_AT ASC";
-	    PreparedStatement parentStmt = conn.prepareStatement(parentCommentSql);
-	    parentStmt.setInt(1, postId);
-	    ResultSet parentRs = parentStmt.executeQuery();
-	
-	    while (parentRs.next()) {
-	        int parentCommentId = parentRs.getInt("COMMENT_ID");
-	        int parentUserId = parentRs.getInt("USER_ID");
-	        String parentContent = parentRs.getString("CONTENT");
-	        String parentDate = parentRs.getString("CREATED_AT");
-	        String parentDeleted = parentRs.getString("deleted");
-	        String parentCommenter = "";
-	        String commenterStyle = "";
-	
-	        if ("Y".equals(parentDeleted)) {
-	            parentContent = "삭제된 댓글입니다.";
-	            parentCommenter = "(삭제)";
-	            commenterStyle = "style='color:gray;'";
-	        } else {
-	            if (parentUserId == authorId) {
-	                parentCommenter = "익명(글쓴이)";
-	            } else {
-	                parentCommenter = "익명" + anonymousMap.get(parentUserId);
-	            }
-	        }
+	            String parentCommentSql = "SELECT c.COMMENT_ID, c.USER_ID, c.CONTENT, c.CREATED_AT, c.PARENT_ID, c.deleted, u.IS_DELETED "
+                                + "FROM comments c LEFT JOIN users u ON c.USER_ID = u.USER_ID "
+                                + "WHERE c.POST_ID = ? AND c.PARENT_ID = 0 ORDER BY c.CREATED_AT ASC";
+        PreparedStatement parentStmt = conn.prepareStatement(parentCommentSql);
+        parentStmt.setInt(1, postId);
+        ResultSet parentRs = parentStmt.executeQuery();
+
+        while (parentRs.next()) {
+            int parentCommentId = parentRs.getInt("COMMENT_ID");
+            int parentUserId = parentRs.getInt("USER_ID");
+            String parentContent = parentRs.getString("CONTENT");
+            String parentDate = parentRs.getString("CREATED_AT");
+            String parentDeleted = parentRs.getString("deleted");
+            String parentIsDeleted = parentRs.getString("IS_DELETED");
+            String parentCommenter = "";
+            String commenterStyle = "";
+
+            if ("Y".equals(parentDeleted)) {
+                parentContent = "삭제된 댓글입니다.";
+                parentCommenter = "(삭제)";
+                commenterStyle = "style='color:gray;'";
+            } else {
+                if ("Y".equals(parentIsDeleted)) {
+                    parentCommenter = "(알 수 없음)";
+                } else if (parentUserId == authorId) {
+                    parentCommenter = "익명(글쓴이)";
+                } else {
+                    if (!anonymousMap.containsKey(parentUserId)) {
+                        anonymousMap.put(parentUserId, anonymousCount++);
+                    }
+                    parentCommenter = "익명" + anonymousMap.get(parentUserId);
+                }
+            }
 	%>
-	    <div class="comment-item">
-	        <strong <%= commenterStyle %>><%= parentCommenter %></strong>: <%= parentContent %> <span>(<%= parentDate %>)</span>
-	        <% if (parentUserId == userId && !"Y".equals(parentDeleted)) { %>
-	            <a href="/board/editComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= parentCommentId %>">수정</a>
-	            <a href="/board/deleteComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= parentCommentId %>" onclick="return confirm('댓글을 삭제하시겠습니까?')">삭제</a>
-	        <% } %>
+    <div class="comment-item">
+        <strong <%= commenterStyle %>><%= parentCommenter %></strong>: <%= parentContent %> <span>(<%= parentDate %>)</span>
+        <% if (parentUserId == userId && !"Y".equals(parentDeleted)) { %>
+            <a href="/board/editComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= parentCommentId %>">수정</a>
+            <a href="/board/deleteComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= parentCommentId %>" onclick="return confirm('댓글을 삭제하시겠습니까?')">삭제</a>
+        <% } %>
+    </div>
 	        <button class="reply-button" onclick="showReplyForm(<%= parentCommentId %>)">대댓글</button>
 	        <div id="replyForm<%= parentCommentId %>" style="display:none;">
 	            <form method="post" action="/board/addComment.jsp">
@@ -249,21 +264,26 @@
 	                    replyCommenter = "(삭제)";
 	                    commenterStyle = "style='color:gray;'";
 	                } else {
-	                    if (replyUserId == authorId) {
+	                    if ("Y".equals(parentIsDeleted)) {
+	                        replyCommenter = "(알 수 없음)";
+	                    } else if (replyUserId == authorId) {
 	                        replyCommenter = "익명(글쓴이)";
 	                    } else {
+	                        if (!anonymousMap.containsKey(replyUserId)) {
+	                            anonymousMap.put(replyUserId, anonymousCount++);
+	                        }
 	                        replyCommenter = "익명" + anonymousMap.get(replyUserId);
 	                    }
 	                }
-	        %>
-	            <div class="comment-item comment-reply">
-	                <strong <%= commenterStyle %>><%= replyCommenter %></strong>: <%= replyContent %> <span>(<%= replyDate %>)</span>
-	                <% if (replyUserId == userId && !"Y".equals(replyDeleted)) { %>
-	                    <a href="/board/editComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= replyCommentId %>">수정</a>
-	                    <a href="/board/deleteComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= replyCommentId %>" onclick="return confirm('댓글을 삭제하시겠습니까?')">삭제</a>
-	                <% } %>
-	            </div>
-	        <%
+			%>
+			    <div class="comment-item comment-reply">
+			        <strong <%= commenterStyle %>><%= replyCommenter %></strong>: <%= replyContent %> <span>(<%= replyDate %>)</span>
+			        <% if (replyUserId == userId && !"Y".equals(replyDeleted)) { %>
+			            <a href="/board/editComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= replyCommentId %>">수정</a>
+			            <a href="/board/deleteComment.jsp?postId=<%= postId %>&boardId=<%= boardId %>&commentId=<%= replyCommentId %>" onclick="return confirm('댓글을 삭제하시겠습니까?')">삭제</a>
+			        <% } %>
+			    </div>
+			<%
 	            }
 	            replyRs.close();
 	            replyStmt.close();
@@ -274,7 +294,6 @@
 	    parentRs.close();
 	    parentStmt.close();
 	%>
-	</div>
 </div>
 <div>
     <a href="/board/boardList.jsp?boardId=<%= boardId %>" class="back-button">글 목록</a>

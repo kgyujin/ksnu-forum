@@ -240,8 +240,9 @@
 	<form action="LogoutServlet" method="get">
 	    <input type="submit" value="로그아웃" style="padding: 8px 16px; font-size: 16px; margin-bottom: 20px;">
 	</form>
-
-
+	<form action="/DeleteAccountServlet" method="post" style="display: inline;">
+        <button type="submit" class="logout-button" style="background-color: red;">회원 탈퇴</button>
+    </form>
     <div style="background-color: white; padding: 0; border-top: 1px solid #fff;">
         <a href="myPosts.jsp" style="display: block; background-color: #ddd; padding: 15px 0; text-decoration: none; color: black; font-size: 20px;">내가 쓴 글</a>
         <a href="myComments.jsp" style="display: block; background-color: #ddd; padding: 15px 0; text-decoration: none; color: black; font-size: 20px;">댓글 단 글</a>
