@@ -3,15 +3,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>로그인</title>
+    <title>군산대 커뮤니티 로그인</title>
+    <link rel="stylesheet" href="/common/css/login.css" />
 </head>
 <body>
-    <h2>로그인</h2>
-	<form action="LoginServlet" method="post">
-	    학번: <input type="text" name="userId" required><br>
-	    비밀번호: <input type="password" name="password" required><br>
-	    <input type="submit" value="로그인">
-	</form>
-    <a href="register.jsp">회원가입</a>
+    <div class="login-container">
+        <h2 class="title">군산대학교 커뮤니티 로그인</h2>
+        <form action="LoginServlet" method="post" class="login-form">
+            <input type="text" name="userId" placeholder="학번" required />
+            <input type="password" name="password" placeholder="비밀번호" required />
+            <input type="submit" value="로그인" class="login-btn" />
+        </form>
+        <div class="link-box">
+            <a href="register.jsp">회원가입</a>
+        </div>
+    </div>
 </body>
 </html>
