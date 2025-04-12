@@ -88,9 +88,10 @@
     <table class="board-table">
         <thead>
             <tr>
-                <th width="15%">게시판</th>
+                <th width="10%">게시판</th>
                 <th width="55%">제목</th>
-                <th width="30%">작성일</th>
+                <th width="20%">내용</th>
+                <th width="15%">작성일</th>
             </tr>
         </thead>
         <tbody>
@@ -123,7 +124,7 @@
             }
 
             // 게시글 검색 쿼리 수정: BOARD_ID 추가
-            String searchSql = "SELECT b.BOARD_NAME, p.TITLE, p.POST_ID, p.BOARD_ID, p.CREATED_AT "
+            String searchSql = "SELECT b.BOARD_NAME, p.TITLE, p.CONTENT, p.POST_ID, p.BOARD_ID, p.CREATED_AT "
                              + "FROM POSTS p JOIN BOARDS b ON p.BOARD_ID = b.BOARD_ID "
                              + "WHERE p.TITLE LIKE ? ORDER BY p.CREATED_AT DESC LIMIT ? OFFSET ?";
             searchStmt = conn.prepareStatement(searchSql);
@@ -138,13 +139,21 @@
                 hasResults = true;
                 String boardName = searchRs.getString("BOARD_NAME");
                 String title = searchRs.getString("TITLE");
+                String content = searchRs.getString("CONTENT");
                 int postId = searchRs.getInt("POST_ID");
                 int boardId = searchRs.getInt("BOARD_ID");
                 String createdAt = searchRs.getString("CREATED_AT");
+                
+             	// 내용 요약 (10자 이상이면 자르고 ... 추가)
+                String contentSummary = content;
+                if (content != null && content.length() > 10) {
+                    contentSummary = content.substring(0, 10) + "...";
+                }
 %>
             <tr>
                 <td><%= boardName %></td>
                 <td class="title"><a href="/board/boardView.jsp?boardId=<%= boardId %>&postId=<%= postId %>"><%= title %></a></td>
+                <td><%= contentSummary %></td>
                 <td><%= createdAt %></td>
             </tr>
 <%

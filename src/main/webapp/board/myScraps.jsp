@@ -88,10 +88,10 @@
     <table class="board-table">
         <thead>
             <tr>
-                <th width="10%">번호</th>
-                <th width="15%">게시판</th>
-                <th width="45%">제목</th>
-                <th width="30%">스크랩일</th>
+                <th width="10%">게시판</th>
+                <th width="55%">제목</th>
+                <th width="20%">내용</th>
+                <th width="15%">스크랩일</th>
             </tr>
         </thead>
         <tbody>
@@ -116,7 +116,7 @@
         }
 
         // 내가 스크랩한 글 목록 조회 - 게시판 이름 추가
-        String postSql = "SELECT P.BOARD_ID, P.POST_ID, P.TITLE, S.SCRAP_DATE, B.BOARD_NAME " +
+        String postSql = "SELECT P.BOARD_ID, P.POST_ID, P.TITLE, p.CONTENT, S.SCRAP_DATE, B.BOARD_NAME " +
                          "FROM SCRAPS S " +
                          "JOIN POSTS P ON S.POST_ID = P.POST_ID " +
                          "JOIN BOARDS B ON P.BOARD_ID = B.BOARD_ID " +
@@ -136,13 +136,20 @@
             int boardId = scrapRs.getInt("BOARD_ID");
             int postId = scrapRs.getInt("POST_ID");
             String title = scrapRs.getString("TITLE");
+            String content = scrapRs.getString("CONTENT");
             String scrapedAt = scrapRs.getString("SCRAP_DATE");
             String boardName = scrapRs.getString("BOARD_NAME");
+            
+         	// 내용 요약 (10자 이상이면 자르고 ... 추가)
+            String contentSummary = content;
+            if (content != null && content.length() > 10) {
+                contentSummary = content.substring(0, 10) + "...";
+            }
 %>
             <tr>
-                <td><%= index++ %></td>
                 <td><%= boardName %></td>
                 <td class="title"><a href="/board/boardView.jsp?boardId=<%= boardId %>&postId=<%= postId %>"><%= title %></a></td>
+                <td><%= contentSummary %></td>
                 <td><%= scrapedAt %></td>
             </tr>
 <%
