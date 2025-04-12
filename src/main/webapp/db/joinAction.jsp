@@ -9,19 +9,19 @@
     String password = request.getParameter("password");
     String name = request.getParameter("name");
     String email = request.getParameter("email");
-    String certificatePath = request.getParameter("certificatePath");
+    // String certificatePath = request.getParameter("certificatePath");
 
     PreparedStatement pstmt = null;
 
     try {
         // 사용자 등록 SQL
-        String sql = "INSERT INTO users (STD_NUM, PASSWORD, NAME, EMAIL, CERTIFICATE_PATH) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users (STD_NUM, PASSWORD, NAME, EMAIL) VALUES (?, ?, ?, ?)";
         pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         pstmt.setString(1, stdNum);
         pstmt.setString(2, password);
         pstmt.setString(3, name);
         pstmt.setString(4, email);
-        pstmt.setString(5, (certificatePath != null && !certificatePath.isEmpty()) ? certificatePath : null);
+        // pstmt.setString(5, (certificatePath != null && !certificatePath.isEmpty()) ? certificatePath : null);
 
         int result = pstmt.executeUpdate();
 
