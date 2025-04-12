@@ -89,7 +89,8 @@
         <thead>
             <tr>
                 <th width="10%">번호</th>
-                <th width="60%">제목</th>
+                <th width="15%">게시판</th>
+                <th width="45%">제목</th>
                 <th width="30%">작성일</th>
             </tr>
         </thead>
@@ -117,10 +118,11 @@
             totalPages = PagingUtil.calculateTotalPages(totalPosts, itemsPerPage);
         }
 
-        // 내가 댓글 단 게시글 목록 조회
-        String postSql = "SELECT DISTINCT p.POST_ID, p.BOARD_ID, p.TITLE, p.CREATED_AT " +
+        // 내가 댓글 단 게시글 목록 조회 - 게시판 이름 추가
+        String postSql = "SELECT DISTINCT p.POST_ID, p.BOARD_ID, p.TITLE, p.CREATED_AT, b.BOARD_NAME " +
                          "FROM POSTS p " +
                          "JOIN COMMENTS c ON p.POST_ID = c.POST_ID " +
+                         "JOIN BOARDS b ON p.BOARD_ID = b.BOARD_ID " +
                          "WHERE c.USER_ID = ? " +
                          "ORDER BY p.CREATED_AT DESC " +
                          "LIMIT ? OFFSET ?";
@@ -139,9 +141,11 @@
             int boardId = postRs.getInt("BOARD_ID");
             String title = postRs.getString("TITLE");
             String createdAt = postRs.getString("CREATED_AT");
+            String boardName = postRs.getString("BOARD_NAME");
 %>
             <tr>
                 <td><%= index++ %></td>
+                <td><%= boardName %></td>
                 <td class="title"><a href="/board/boardView.jsp?boardId=<%= boardId %>&postId=<%= postId %>"><%= title %></a></td>
                 <td><%= createdAt %></td>
             </tr>
@@ -151,7 +155,7 @@
         if (!hasResults) {
 %>
             <tr>
-                <td colspan="3" style="text-align: center;">댓글을 작성한 글이 없습니다.</td>
+                <td colspan="4" style="text-align: center;">댓글을 작성한 글이 없습니다.</td>
             </tr>
 <%
         }

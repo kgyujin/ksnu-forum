@@ -89,7 +89,8 @@
         <thead>
             <tr>
                 <th width="10%">번호</th>
-                <th width="60%">제목</th>
+                <th width="15%">게시판</th>
+                <th width="45%">제목</th>
                 <th width="30%">스크랩일</th>
             </tr>
         </thead>
@@ -114,9 +115,11 @@
             totalPages = PagingUtil.calculateTotalPages(totalScraps, itemsPerPage);
         }
 
-        // 내가 스크랩한 글 목록 조회
-        String postSql = "SELECT P.BOARD_ID, P.POST_ID, P.TITLE, S.SCRAP_DATE " +
-                         "FROM SCRAPS S JOIN POSTS P ON S.POST_ID = P.POST_ID " +
+        // 내가 스크랩한 글 목록 조회 - 게시판 이름 추가
+        String postSql = "SELECT P.BOARD_ID, P.POST_ID, P.TITLE, S.SCRAP_DATE, B.BOARD_NAME " +
+                         "FROM SCRAPS S " +
+                         "JOIN POSTS P ON S.POST_ID = P.POST_ID " +
+                         "JOIN BOARDS B ON P.BOARD_ID = B.BOARD_ID " +
                          "WHERE S.USER_ID = ? " +
                          "ORDER BY S.SCRAP_DATE DESC LIMIT ? OFFSET ?";
         PreparedStatement postStmt = conn.prepareStatement(postSql);
@@ -134,9 +137,11 @@
             int postId = scrapRs.getInt("POST_ID");
             String title = scrapRs.getString("TITLE");
             String scrapedAt = scrapRs.getString("SCRAP_DATE");
+            String boardName = scrapRs.getString("BOARD_NAME");
 %>
             <tr>
                 <td><%= index++ %></td>
+                <td><%= boardName %></td>
                 <td class="title"><a href="/board/boardView.jsp?boardId=<%= boardId %>&postId=<%= postId %>"><%= title %></a></td>
                 <td><%= scrapedAt %></td>
             </tr>
@@ -146,7 +151,7 @@
         if (!hasResults) {
 %>
             <tr>
-                <td colspan="3" style="text-align: center;">스크랩한 글이 없습니다.</td>
+                <td colspan="4" style="text-align: center;">스크랩한 글이 없습니다.</td>
             </tr>
 <%
         }
