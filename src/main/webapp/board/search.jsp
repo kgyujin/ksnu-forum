@@ -10,29 +10,52 @@
     <title>검색 결과</title>
     <meta charset="UTF-8">
     <style>
-        .result-container {
-            margin: 20px;
+        .board-container {
+            width: 80%;
+            margin: 20px auto;
         }
-        .result-title {
-            font-size: 20px;
+        .board-title {
+            font-size: 24px;
             font-weight: bold;
             margin-bottom: 20px;
         }
-        .result-item {
-            margin: 15px 0;
+        .board-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .board-table th, .board-table td {
             padding: 10px;
             border-bottom: 1px solid #ddd;
+            text-align: center;
         }
-        .board-name {
-            font-weight: bold;
-            color: grey;
+        .board-table th {
+            background-color: #f2f2f2;
         }
-        .post-title {
-            font-size: 18px;
+        .board-table td.title {
+            text-align: left;
         }
-        .post-info {
-            font-size: 12px;
-            color: gray;
+        .board-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        .board-table td.title a {
+		    text-decoration: none;
+		    color: #333;
+		    transition: color 0.3s ease;
+		}
+		
+		.board-table td.title a:hover {
+		    color: #007bff;
+		}
+        .write-btn {
+            margin: 20px 0;
+            text-align: right;
+        }
+        .write-btn a {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
         }
         /* 페이지 네비게이션 스타일 */
         .pagination {
@@ -59,8 +82,18 @@
 </head>
 <body>
 
-<div class="result-container">
-    <div class="result-title">검색 결과</div>
+<div class="board-container">
+    <div class="board-title">검색 결과</div>
+    
+    <table class="board-table">
+        <thead>
+            <tr>
+                <th width="15%">게시판</th>
+                <th width="55%">제목</th>
+                <th width="30%">작성일</th>
+            </tr>
+        </thead>
+        <tbody>
 <%
     String query = request.getParameter("query");
 
@@ -99,25 +132,33 @@
             searchStmt.setInt(3, offset);
             searchRs = searchStmt.executeQuery();
 
+            boolean hasResults = false;
+            
             while (searchRs.next()) {
+                hasResults = true;
                 String boardName = searchRs.getString("BOARD_NAME");
                 String title = searchRs.getString("TITLE");
                 int postId = searchRs.getInt("POST_ID");
                 int boardId = searchRs.getInt("BOARD_ID");
                 String createdAt = searchRs.getString("CREATED_AT");
 %>
-        <div class="result-item">
-            <span class="board-name"><%= boardName %></span>
-            <div class="post-title">
-                <!-- 수정: boardId와 postId를 함께 넘김 -->
-                <a href="/board/boardView.jsp?boardId=<%= boardId %>&postId=<%= postId %>"><%= title %></a>
-            </div>
-            <div class="post-info">작성일: <%= createdAt %></div>
-        </div>
+            <tr>
+                <td><%= boardName %></td>
+                <td class="title"><a href="/board/boardView.jsp?boardId=<%= boardId %>&postId=<%= postId %>"><%= title %></a></td>
+                <td><%= createdAt %></td>
+            </tr>
+<%
+            }
+            
+            if (!hasResults) {
+%>
+            <tr>
+                <td colspan="3" style="text-align: center;">검색 결과가 없습니다.</td>
+            </tr>
 <%
             }
         } catch (Exception e) {
-            out.println("검색 오류: " + e.getMessage());
+            out.println("<tr><td colspan='3'>검색 오류: " + e.getMessage() + "</td></tr>");
         } finally {
             if (searchRs != null) searchRs.close();
             if (searchStmt != null) searchStmt.close();
@@ -125,13 +166,18 @@
             if (countStmt != null) countStmt.close();
         }
     } else {
-        out.println("<p>검색어를 입력해주세요.</p>");
+%>
+        <tr>
+            <td colspan="3" style="text-align: center;">검색어를 입력해주세요.</td>
+        </tr>
+<%
     }
 %>
-</div>
+        </tbody>
+    </table>
 
-<!-- 페이지 네비게이션 -->
-<div class="pagination">
+    <!-- 페이지 네비게이션 -->
+    <div class="pagination">
 <%
     int groupSize = 10;
     int startPage = ((pageNum - 1) / groupSize) * groupSize + 1;
@@ -139,8 +185,8 @@
 
     if (startPage > 1) {
 %>
-    <a href="?query=<%= query %>&page=1"><<</a>
-    <a href="?query=<%= query %>&page=<%= startPage - 1 %>"><</a>
+        <a href="?query=<%= query %>&page=1"><<</a>
+        <a href="?query=<%= query %>&page=<%= startPage - 1 %>"><</a>
 <%
     }
 
@@ -158,11 +204,12 @@
 
     if (endPage < totalPages) {
 %>
-    <a href="?query=<%= query %>&page=<%= endPage + 1 %>">></a>
-    <a href="?query=<%= query %>&page=<%= totalPages %>">>></a>
+        <a href="?query=<%= query %>&page=<%= endPage + 1 %>">></a>
+        <a href="?query=<%= query %>&page=<%= totalPages %>">>></a>
 <%
     }
 %>
+    </div>
 </div>
 
 </body>
