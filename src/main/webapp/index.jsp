@@ -310,9 +310,9 @@
             <form action="LogoutServlet" method="get">
                 <input type="submit" value="로그아웃" class="logout-button">
             </form>
-            <form action="/DeleteAccountServlet" method="post">
-                <button type="submit" class="delete-account-button">회원 탈퇴</button>
-            </form>
+            <form action="/DeleteAccountServlet" method="post" onsubmit="return confirmDelete();">
+			    <button type="submit" class="delete-account-button">회원 탈퇴</button>
+			</form>
             
             <div class="menu-links">
                 <a href="board/myPosts.jsp" class="menu-link">내가 쓴 글</a>
@@ -421,4 +421,9 @@
         </div>
     </div>
 </body>
+<script>
+function confirmDelete() {
+    return confirm("정말 회원 탈퇴하시겠습니까? 탈퇴 후에는 복구할 수 없습니다.");
+}
+</script>
 </html>
