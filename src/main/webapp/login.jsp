@@ -8,6 +8,10 @@
 </head>
 <body>
     <div class="login-container">
+		<div class="logo-wrapper">
+            <img src="/images/logo.jpg" alt="로고" class="logo-image">
+        </div>
+    
         <h2 class="title">군산대학교 커뮤니티 로그인</h2>
         <form action="LoginServlet" method="post" class="login-form">
             <input type="text" name="userId" placeholder="학번" required />
