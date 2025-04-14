@@ -154,20 +154,26 @@
             boardId = Integer.parseInt(request.getParameter("boardId"));
         }
 
-        String postSql = "SELECT p.TITLE, p.CONTENT, p.CREATED_AT, p.RECOMMEND_CNT, p.SCRAP_CNT, p.USER_ID, u.IS_DELETED " +
-                         "FROM POSTS p LEFT JOIN USERS u ON p.USER_ID = u.USER_ID WHERE p.POST_ID = ?";
-        PreparedStatement postStmt = conn.prepareStatement(postSql);
-        postStmt.setInt(1, postId);
-        ResultSet postRs = postStmt.executeQuery();
-
-        if (postRs.next()) {
-            String title = postRs.getString("TITLE");
-            String content = postRs.getString("CONTENT");
-            String createdAt = postRs.getString("CREATED_AT");
-            int recommendCnt = postRs.getInt("RECOMMEND_CNT");
-            int scrapCnt = postRs.getInt("SCRAP_CNT");
-            authorId = postRs.getInt("USER_ID");
-            String authorIsDeleted = postRs.getString("IS_DELETED");
+        String postSql = "SELECT p.TITLE, p.CONTENT, p.CREATED_AT, " +
+                "       (SELECT COUNT(*) FROM RECOMMENDS r WHERE r.POST_ID = p.POST_ID) AS RECOMMEND_CNT, " +
+                "       (SELECT COUNT(*) FROM SCRAPS s WHERE s.POST_ID = p.POST_ID) AS SCRAP_CNT, " +
+                "       p.USER_ID, u.IS_DELETED " +
+                "FROM POSTS p " +
+                "LEFT JOIN USERS u ON p.USER_ID = u.USER_ID " +
+                "WHERE p.POST_ID = ?";
+		PreparedStatement postStmt = conn.prepareStatement(postSql);
+		postStmt.setInt(1, postId);
+		ResultSet postRs = postStmt.executeQuery();
+		
+		if (postRs.next()) 
+		{
+		   String title = postRs.getString("TITLE");
+		   String content = postRs.getString("CONTENT");
+		   String createdAt = postRs.getString("CREATED_AT");
+		   int recommendCnt = postRs.getInt("RECOMMEND_CNT");
+		   int scrapCnt = postRs.getInt("SCRAP_CNT");
+		   authorId = postRs.getInt("USER_ID");
+		   String authorIsDeleted = postRs.getString("IS_DELETED");
 %>
 
 <div class="post-title"><%= title %></div>

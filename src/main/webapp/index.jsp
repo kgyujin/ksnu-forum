@@ -332,7 +332,8 @@
                     
                     try {
                         String hotPostSql = "SELECT POST_ID, TITLE, BOARD_ID, CREATED_AT, RECOMMEND_CNT " +
-                                            "FROM POSTS WHERE CREATED_AT >= DATE_SUB(NOW(), INTERVAL 7 DAY) " +
+                                            "FROM POSTS " +
+                                            // "FROM POSTS WHERE CREATED_AT >= DATE_SUB(NOW(), INTERVAL 7 DAY) " +
                                             "ORDER BY RECOMMEND_CNT DESC LIMIT 4";
                         hotPostStmt = conn.prepareStatement(hotPostSql);
                         hotPostRs = hotPostStmt.executeQuery();
