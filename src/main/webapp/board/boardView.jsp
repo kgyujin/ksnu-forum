@@ -190,7 +190,7 @@
     ResultSet imgRs = imgStmt.executeQuery();
     while (imgRs.next()) {
 %>
-    <img src="<%= request.getContextPath() + "/" + imgRs.getString("IMAGE_PATH") %>" style="margin-bottom: 15px;">
+    <img src="<%= request.getContextPath() + "/" + imgRs.getString("IMAGE_PATH") %>" style="max-width: 745px; margin-bottom: 15px;">
 <%
     }
     imgRs.close();
